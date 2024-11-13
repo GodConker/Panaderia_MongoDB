@@ -4,10 +4,24 @@
  */
 package interfaces;
 
+import entidades.Inventario;
+import java.util.List;
+
 /**
  *
  * @author danie
  */
 public interface IInventarioDAO {
-    
+
+    List<Inventario> obtenerInventarioCompleto();
+
+    Inventario obtenerInventarioPorID(int id);
+
+    boolean actualizarInventario(Inventario inventario);
+
+    boolean agregarProductoAlInventario(Inventario inventario);
+
+    boolean eliminarProductoDelInventario(int id);
+
+    List<Inventario> buscarInventarioPorNombre(String nombre);
 }

@@ -4,39 +4,53 @@
  */
 package entidades;
 
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
+
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
 
 /**
- *
- * @author danie
+ * Clase que representa la entidad 'Produccion' en MongoDB
  */
-@Entity
-@Table(name = "Produccion")  // Mapea la tabla 'Produccion' en la base de datos
+@Entity("Produccion")  // Nombre de la colección en MongoDB
 public class Produccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Asumimos que el ID es autoincrementable
-    @Column(name = "idProduccion")  // Mapea la columna 'idProduccion'
-    private Long id;
+    @Id  // El identificador de la entidad (MongoDB usa ObjectId)
+    private ObjectId id;
 
-    @Column(name = "fechaProduccion")  // Mapea la columna 'fechaProduccion'
-    @Temporal(TemporalType.DATE)  // Especifica que es una fecha (sin hora)
     private Date fechaProduccion;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Relación muchos a uno con Empleado
-    @JoinColumn(name = "id_empleado", referencedColumnName = "idEmpleado")  // Mapea la clave foránea
+    @Reference  // Relación con Empleado (Referencia en MongoDB)
     private Empleado empleado;
 
+    // Constructor vacío
+    public Produccion() {
+    }
+
+    // Constructor con parámetros
+    public Produccion(ObjectId id, Date fechaProduccion, Empleado empleado) {
+        this.id = id;
+        this.fechaProduccion = fechaProduccion;
+        this.empleado = empleado;
+    }
+
+    // Constructor sin ID (cuando se genera automáticamente en MongoDB)
+    public Produccion(Date fechaProduccion, Empleado empleado) {
+        this.fechaProduccion = fechaProduccion;
+        this.empleado = empleado;
+    }
+
     // Getters y Setters
-    public Long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 

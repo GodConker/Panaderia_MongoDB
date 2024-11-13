@@ -4,39 +4,50 @@
  */
 package entidades;
 
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
+
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
 
 /**
- *
- * @author danie
+ * Clase que representa la entidad 'Entrega' en MongoDB
  */
-@Entity
-@Table(name = "Entrega")  // Mapea la tabla 'Entrega' en la base de datos
+@Entity("Entrega")  // Nombre de la colección en MongoDB
 public class Entrega implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Asumimos que el ID es autoincrementable
-    @Column(name = "idEntrega")  // Mapea la columna 'idEntrega'
-    private Long id;
+    @Id  // El identificador de la entidad
+    private ObjectId id;
 
-    @Column(name = "fechaEntrega")  // Mapea la columna 'fechaEntrega'
-    @Temporal(TemporalType.DATE)  // Especifica que es una fecha (sin hora)
     private Date fechaEntrega;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Relación muchos a uno con Tienda
-    @JoinColumn(name = "id_tienda", referencedColumnName = "idTienda")  // Mapea la clave foránea
+    @Reference  // Relación con Tienda
     private Tienda tienda;
 
+    public Entrega() {
+    }
+
+    public Entrega(ObjectId id, Date fechaEntrega, Tienda tienda) {
+        this.id = id;
+        this.fechaEntrega = fechaEntrega;
+        this.tienda = tienda;
+    }
+
+    public Entrega(Date fechaEntrega, Tienda tienda) {
+        this.fechaEntrega = fechaEntrega;
+        this.tienda = tienda;
+    }
+
     // Getters y Setters
-    public Long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -69,10 +80,7 @@ public class Entrega implements Serializable {
             return false;
         }
         Entrega other = (Entrega) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override

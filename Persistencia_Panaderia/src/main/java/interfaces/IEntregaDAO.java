@@ -4,10 +4,25 @@
  */
 package interfaces;
 
+import entidades.Entrega;
+import java.util.Date;
+import java.util.List;
+
 /**
  *
  * @author danie
  */
 public interface IEntregaDAO {
-    
+
+    List<Entrega> obtenerTodasEntregas();
+
+    Entrega obtenerEntregaPorID(int id);
+
+    boolean agregarEntrega(Entrega entrega);
+
+    boolean actualizarEntrega(Entrega entrega);
+
+    boolean eliminarEntrega(int id);
+
+    List<Entrega> obtenerEntregasPorFecha(Date fecha);
 }

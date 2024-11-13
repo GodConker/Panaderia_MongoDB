@@ -4,42 +4,55 @@
  */
 package entidades;
 
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+
 import java.io.Serializable;
-import javax.persistence.*;
 
 /**
- *
- * @author danie
+ * Clase que representa la entidad 'Tienda' en MongoDB
  */
-@Entity
-@Table(name = "Tienda")  // Aquí se indica el nombre de la tabla en la base de datos
+@Entity("Tienda")  // Nombre de la colección en MongoDB
 public class Tienda implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Usamos IDENTIY para que el valor del ID sea autoincremental
-    @Column(name = "idTienda")  // Se mapea al nombre de la columna en la base de datos
-    private Long id;  // Aquí el tipo de datos es Long por convención JPA, aunque en la base de datos es INT
+    @Id  // El identificador de la entidad (MongoDB usa ObjectId)
+    private ObjectId id;
 
-    @Column(name = "nombre", length = 100, nullable = false)  // Mapea la columna 'nombre'
     private String nombre;
-
-    @Column(name = "ubicacionCoordenadas", length = 100, nullable = true)  // Mapea la columna 'ubicacionCoordenadas'
     private String ubicacionCoordenadas;
-
-    @Column(name = "telefono", length = 15, nullable = true)  // Mapea la columna 'telefono'
     private String telefono;
-
-    @Column(name = "direccion", length = 255, nullable = true)  // Mapea la columna 'direccion'
     private String direccion;
 
+    // Constructor vacío
+    public Tienda() {
+    }
+
+    // Constructor con parámetros
+    public Tienda(ObjectId id, String nombre, String ubicacionCoordenadas, String telefono, String direccion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.ubicacionCoordenadas = ubicacionCoordenadas;
+        this.telefono = telefono;
+        this.direccion = direccion;
+    }
+
+    // Constructor sin ID (cuando se genera automáticamente en MongoDB)
+    public Tienda(String nombre, String ubicacionCoordenadas, String telefono, String direccion) {
+        this.nombre = nombre;
+        this.ubicacionCoordenadas = ubicacionCoordenadas;
+        this.telefono = telefono;
+        this.direccion = direccion;
+    }
+
     // Getters y Setters
-    public Long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -98,5 +111,4 @@ public class Tienda implements Serializable {
     public String toString() {
         return "entidades.Tienda[ id=" + id + " ]";
     }
-    
 }

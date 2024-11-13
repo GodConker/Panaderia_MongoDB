@@ -4,42 +4,55 @@
  */
 package entidades;
 
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+
 import java.io.Serializable;
-import javax.persistence.*;
 
 /**
- *
- * @author danie
+ * Clase que representa la entidad 'Producto' en MongoDB
  */
-@Entity
-@Table(name = "Producto")  // Aquí se indica el nombre de la tabla en la base de datos
+@Entity("Producto")  // Nombre de la colección en MongoDB
 public class Producto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Usamos IDENTIY para que el valor del ID sea autoincremental
-    @Column(name = "idProducto")  // Se mapea al nombre de la columna en la base de datos
-    private Long id;  // Aquí el tipo de datos es Long por convención JPA, aunque en la base de datos es INT
+    @Id  // El identificador de la entidad (MongoDB usa ObjectId)
+    private ObjectId id;
 
-    @Column(name = "nombre", length = 100, nullable = false)  // Mapea la columna 'nombre'
     private String nombre;
-
-    @Column(name = "marca", length = 100, nullable = false)  // Mapea la columna 'marca'
     private String marca;
-
-    @Column(name = "precio", precision = 10, scale = 2, nullable = false)  // Mapea la columna 'precio'
     private Double precio;
-
-    @Column(name = "descripcion", columnDefinition = "TEXT")  // Mapea la columna 'descripcion'
     private String descripcion;
 
+    // Constructor vacío
+    public Producto() {
+    }
+
+    // Constructor con parámetros
+    public Producto(ObjectId id, String nombre, String marca, Double precio, String descripcion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.marca = marca;
+        this.precio = precio;
+        this.descripcion = descripcion;
+    }
+
+    // Constructor sin ID (cuando se genera automáticamente en MongoDB)
+    public Producto(String nombre, String marca, Double precio, String descripcion) {
+        this.nombre = nombre;
+        this.marca = marca;
+        this.precio = precio;
+        this.descripcion = descripcion;
+    }
+
     // Getters y Setters
-    public Long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 

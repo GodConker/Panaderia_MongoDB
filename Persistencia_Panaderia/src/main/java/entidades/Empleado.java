@@ -4,39 +4,52 @@
  */
 package entidades;
 
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+
 import java.io.Serializable;
-import javax.persistence.*;
 
 /**
- *
- * @author danie
+ * Clase que representa la entidad 'Empleado' en MongoDB
  */
-@Entity
-@Table(name = "Empleado")  // Mapea la tabla 'Empleado' en la base de datos
+@Entity("Empleado")  // Nombre de la colección en MongoDB
 public class Empleado implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Usamos 'IDENTITY' ya que el ID es autoincrementable
-    @Column(name = "idEmpleado")  // Mapea la columna 'idEmpleado' en la base de datos
-    private Long id;
+    @Id  // El identificador de la entidad (MongoDB usa ObjectId)
+    private ObjectId id;
 
-    @Column(name = "nombre", length = 100, nullable = false)  // Mapea la columna 'nombre'
     private String nombre;
-
-    @Column(name = "cargo", length = 100, nullable = false)  // Mapea la columna 'cargo'
     private String cargo;
-
-    @Column(name = "salario", nullable = false)  // Mapea la columna 'salario'
     private Double salario;
 
+    // Constructor vacío
+    public Empleado() {
+    }
+
+    // Constructor con parámetros
+    public Empleado(ObjectId id, String nombre, String cargo, Double salario) {
+        this.id = id;
+        this.nombre = nombre;
+        this.cargo = cargo;
+        this.salario = salario;
+    }
+
+    // Constructor sin ID (puede usarse cuando el ID se genera automáticamente)
+    public Empleado(String nombre, String cargo, Double salario) {
+        this.nombre = nombre;
+        this.cargo = cargo;
+        this.salario = salario;
+    }
+
     // Getters y Setters
-    public Long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -87,5 +100,4 @@ public class Empleado implements Serializable {
     public String toString() {
         return "entidades.Empleado[ id=" + id + " ]";
     }
-
 }

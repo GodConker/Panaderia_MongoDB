@@ -1,41 +1,64 @@
+/**
+ * Clase que representa la entidad 'Inventario' en MongoDB
+ */
 package entidades;
+
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
+
 
 /**
  *
  * @author danie
  */
-@Entity
-@Table(name = "Inventario")  // Mapea la tabla 'Inventario' en la base de datos
+@Entity("Inventario")  // Nombre de la colección en MongoDB
 public class Inventario implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Asumimos que el ID es autoincrementable
-    @Column(name = "idInventario")  // Mapea la columna 'idInventario'
-    private Long id;
+    @Id  // El identificador de la entidad
+    private ObjectId id;
 
-    @Column(name = "cantidadDisponible")  // Mapea la columna 'cantidadDisponible'
     private int cantidadDisponible;
-
-    @Column(name = "fechaActualizacion")  // Mapea la columna 'fechaActualizacion'
-    @Temporal(TemporalType.DATE)  // Especifica que es una fecha (sin hora)
     private Date fechaActualizacion;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Relación muchos a uno con Producto
-    @JoinColumn(name = "id_producto", referencedColumnName = "idProducto")  // Mapea la clave foránea
+    @Reference  // Relación con el objeto Producto
     private Producto producto;
 
+    public Inventario() {
+    }
+
+    public Inventario(ObjectId id, int cantidadDisponible, Date fechaActualizacion, Producto producto) {
+        this.id = id;
+        this.cantidadDisponible = cantidadDisponible;
+        this.fechaActualizacion = fechaActualizacion;
+        this.producto = producto;
+    }
+
+    public Inventario(int cantidadDisponible, Date fechaActualizacion, Producto producto) {
+        this.cantidadDisponible = cantidadDisponible;
+        this.fechaActualizacion = fechaActualizacion;
+        this.producto = producto;
+    }
+    
+    // Constructor para crear un objeto Inventario usando los parámetros de doc
+    public Inventario(ObjectId id, Producto producto, int cantidadDisponible) {
+        this.id = id;
+        this.producto = producto;
+        this.cantidadDisponible = cantidadDisponible;
+    }
+
     // Getters y Setters
-    public Long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -76,10 +99,7 @@ public class Inventario implements Serializable {
             return false;
         }
         Inventario other = (Inventario) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override

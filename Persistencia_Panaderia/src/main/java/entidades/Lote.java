@@ -4,46 +4,59 @@
  */
 package entidades;
 
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
+
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
 
 /**
- *
- * @author danie
+ * Clase que representa la entidad 'Lote' en MongoDB
  */
-@Entity
-@Table(name = "Lote")  // Mapea la tabla 'Lote' en la base de datos
+@Entity("Lote")  // Nombre de la colección en MongoDB
 public class Lote implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Asumimos que el ID es autoincrementable
-    @Column(name = "idLote")  // Mapea la columna 'idLote'
-    private Long id;
+    @Id  // El identificador de la entidad (MongoDB usa ObjectId)
+    private ObjectId id;
 
-    @Column(name = "cantidadProducida")  // Mapea la columna 'cantidadProducida'
     private int cantidadProducida;
-
-    @Column(name = "fechaProduccion")  // Mapea la columna 'fechaProduccion'
-    @Temporal(TemporalType.DATE)  // Especifica que es una fecha (sin hora)
     private Date fechaProduccion;
-
-    @Column(name = "fechaCaducidad")  // Mapea la columna 'fechaCaducidad'
-    @Temporal(TemporalType.DATE)  // Especifica que es una fecha (sin hora)
     private Date fechaCaducidad;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Relación muchos a uno con Producto
-    @JoinColumn(name = "id_producto", referencedColumnName = "idProducto")  // Mapea la clave foránea
+    @Reference  // Relación con Producto (Referencia en MongoDB)
     private Producto producto;
 
+    // Constructor vacío
+    public Lote() {
+    }
+
+    // Constructor con parámetros
+    public Lote(ObjectId id, int cantidadProducida, Date fechaProduccion, Date fechaCaducidad, Producto producto) {
+        this.id = id;
+        this.cantidadProducida = cantidadProducida;
+        this.fechaProduccion = fechaProduccion;
+        this.fechaCaducidad = fechaCaducidad;
+        this.producto = producto;
+    }
+
+    // Constructor sin ID (cuando se genera automáticamente en MongoDB)
+    public Lote(int cantidadProducida, Date fechaProduccion, Date fechaCaducidad, Producto producto) {
+        this.cantidadProducida = cantidadProducida;
+        this.fechaProduccion = fechaProduccion;
+        this.fechaCaducidad = fechaCaducidad;
+        this.producto = producto;
+    }
+
     // Getters y Setters
-    public Long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 

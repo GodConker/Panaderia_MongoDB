@@ -4,10 +4,24 @@
  */
 package interfaces;
 
+import entidades.Empleado;
+import java.util.List;
+
 /**
  *
  * @author danie
  */
 public interface IEmpleadoDAO {
-    
+
+    List<Empleado> obtenerTodosEmpleados();
+
+    Empleado obtenerEmpleadoPorID(int id);
+
+    boolean agregarEmpleado(Empleado empleado);
+
+    boolean actualizarEmpleado(Empleado empleado);
+
+    boolean eliminarEmpleado(int id);
+
+    List<Empleado> buscarEmpleadosPorNombre(String nombre);
 }
