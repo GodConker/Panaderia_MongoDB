@@ -52,6 +52,15 @@ public class Empleado implements Serializable {
     public void setId(ObjectId id) {
         this.id = id;
     }
+    
+    // Métodos para encapsular ObjectId como String
+    public String getIdAsString() {
+        return id != null ? id.toString() : null;
+    }
+
+    public void setIdFromString(String id) {
+        this.id = (id != null) ? new ObjectId(id) : null;
+    }
 
     public String getNombre() {
         return nombre;
