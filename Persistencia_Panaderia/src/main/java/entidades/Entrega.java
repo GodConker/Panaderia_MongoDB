@@ -11,33 +11,48 @@ import org.mongodb.morphia.annotations.Reference;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-/**
- * Clase que representa la entidad 'Entrega' en MongoDB
- */
 @Entity("Entrega")  // Nombre de la colección en MongoDB
 public class Entrega implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id  // El identificador de la entidad
+    @Id
     private ObjectId id;
 
     private Date fechaEntrega;
 
-    @Reference  // Relación con Tienda
+    @Reference
     private Tienda tienda;
 
+    @Reference
+    private Empleado repartidor;
+
+    // Relación directa con Producto
+    @Reference
+    private List<Producto> productos;
+
+    private double montoTotal;
+
+    // Listas auxiliares para cantidades y precios
+    private List<Integer> cantidades;
+    private List<Double> precios;
+
+    // Constructores
     public Entrega() {
+    }
+
+    public Entrega(Date fechaEntrega, Tienda tienda, Empleado repartidor, List<Producto> productos, double montoTotal) {
+        this.fechaEntrega = fechaEntrega;
+        this.tienda = tienda;
+        this.repartidor = repartidor;
+        this.productos = productos;
+        this.montoTotal = montoTotal;
     }
 
     public Entrega(ObjectId id, Date fechaEntrega, Tienda tienda) {
         this.id = id;
-        this.fechaEntrega = fechaEntrega;
-        this.tienda = tienda;
-    }
-
-    public Entrega(Date fechaEntrega, Tienda tienda) {
         this.fechaEntrega = fechaEntrega;
         this.tienda = tienda;
     }
@@ -49,15 +64,6 @@ public class Entrega implements Serializable {
 
     public void setId(ObjectId id) {
         this.id = id;
-    }
-    
-    // Métodos para encapsular ObjectId como String
-    public String getIdAsString() {
-        return id != null ? id.toString() : null;
-    }
-
-    public void setIdFromString(String id) {
-        this.id = (id != null) ? new ObjectId(id) : null;
     }
 
     public Date getFechaEntrega() {
@@ -76,24 +82,73 @@ public class Entrega implements Serializable {
         this.tienda = tienda;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+    public Empleado getRepartidor() {
+        return repartidor;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Entrega)) {
-            return false;
-        }
-        Entrega other = (Entrega) object;
-        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
+    public void setRepartidor(Empleado repartidor) {
+        this.repartidor = repartidor;
+    }
+
+    public List<Producto> getProductos() {
+        return productos;
+    }
+
+    public void setProductos(List<Producto> productos) {
+        this.productos = productos;
+    }
+
+    public double getMontoTotal() {
+        return montoTotal;
+    }
+
+    public void setMontoTotal(double montoTotal) {
+        this.montoTotal = montoTotal;
+    }
+
+    public List<Integer> getCantidades() {
+        return cantidades;
+    }
+
+    public void setCantidades(List<Integer> cantidades) {
+        this.cantidades = cantidades;
+    }
+
+    public List<Double> getPrecios() {
+        return precios;
+    }
+
+    public void setPrecios(List<Double> precios) {
+        this.precios = precios;
+    }
+    
+    /**
+     * Retorna el ID como un String.
+     * 
+     * @return El ID en formato String.
+     */
+    public String getIdAsString() {
+        return id != null ? id.toString() : null;
+    }
+
+    /**
+     * Convierte un String en ObjectId y lo asigna al campo ID.
+     * 
+     * @param id El ID en formato String.
+     */
+    public void setIdFromString(String id) {
+        this.id = (id != null) ? new ObjectId(id) : null;
     }
 
     @Override
     public String toString() {
-        return "entidades.Entrega[ id=" + id + " ]";
+        return "Entrega{"
+                + "id=" + (id != null ? id.toString() : "null")
+                + ", fechaEntrega=" + fechaEntrega
+                + ", tienda=" + (tienda != null ? tienda.getNombre() : "null")
+                + ", repartidor=" + (repartidor != null ? repartidor.getNombre() : "null")
+                + ", productos=" + productos
+                + ", montoTotal=" + montoTotal
+                + '}';
     }
 }

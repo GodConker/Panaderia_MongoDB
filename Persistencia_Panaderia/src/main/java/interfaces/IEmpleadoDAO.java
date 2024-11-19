@@ -24,4 +24,6 @@ public interface IEmpleadoDAO {
     boolean eliminarEmpleado(int id);
 
     List<Empleado> buscarEmpleadosPorNombre(String nombre);
+    
+    Empleado buscarPorId(String idRepartidor);
 }

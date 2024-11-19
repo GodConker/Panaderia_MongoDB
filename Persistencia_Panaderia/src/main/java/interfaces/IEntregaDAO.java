@@ -25,4 +25,6 @@ public interface IEntregaDAO {
     boolean eliminarEntrega(int id);
 
     List<Entrega> obtenerEntregasPorFecha(Date fecha);
+    
+    void guardarEntrega(Entrega entrega);
 }

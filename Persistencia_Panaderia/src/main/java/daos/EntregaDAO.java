@@ -9,6 +9,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import entidades.Entrega;
+import entidades.Producto;
 import entidades.Tienda;
 import interfaces.IEntregaDAO;
 import org.bson.Document;
@@ -25,6 +26,10 @@ import java.util.List;
 public class EntregaDAO implements IEntregaDAO {
 
     private final MongoCollection<Document> coleccion;
+
+    public EntregaDAO() {
+        this.coleccion = null;
+    }
 
     public EntregaDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección "entregas" de la base de datos
@@ -95,17 +100,17 @@ public class EntregaDAO implements IEntregaDAO {
     }
 
     @Override
-public boolean eliminarEntrega(int id) {
-    try {
-        // Si 'id' es un int, entonces debes convertirlo a ObjectId correctamente
-        Document filtro = new Document("_id", new ObjectId(id + ""));  // Convertimos el int a String y luego a ObjectId
-        coleccion.deleteOne(filtro);
-        return true;
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false;
+    public boolean eliminarEntrega(int id) {
+        try {
+            // Si 'id' es un int, entonces debes convertirlo a ObjectId correctamente
+            Document filtro = new Document("_id", new ObjectId(id + ""));  // Convertimos el int a String y luego a ObjectId
+            coleccion.deleteOne(filtro);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-}
 
     @Override
     public List<Entrega> obtenerEntregasPorFecha(Date fecha) {
@@ -117,5 +122,27 @@ public boolean eliminarEntrega(int id) {
             }
         }
         return entregas;
+    }
+
+    @Override
+    public void guardarEntrega(Entrega entrega) {
+        List<Document> productosDocs = new ArrayList<>();
+        for (int i = 0; i < entrega.getProductos().size(); i++) {
+            Producto producto = entrega.getProductos().get(i);
+            Integer cantidad = entrega.getCantidades().get(i);
+            Double precio = entrega.getPrecios().get(i);
+
+            Document productoDoc = new Document("nombre", producto.getNombre())
+                    .append("cantidad", cantidad)
+                    .append("precio", precio);
+            productosDocs.add(productoDoc);
+        }
+
+        Document documento = new Document("tienda", entrega.getTienda().getIdAsString())
+                .append("repartidor", entrega.getRepartidor().getIdAsString())
+                .append("montoTotal", entrega.getMontoTotal())
+                .append("productos", productosDocs);
+
+        coleccion.insertOne(documento);
     }
 }

@@ -4,6 +4,7 @@
  */
 package daos;
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -17,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase DAO para manejar las operaciones CRUD de la entidad 'Empleado' con MongoDB.
+ * Clase DAO para manejar las operaciones CRUD de la entidad 'Empleado' con
+ * MongoDB.
  */
 public class EmpleadoDAO implements IEmpleadoDAO {
 
@@ -31,10 +33,10 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     // Método auxiliar para convertir un Document a Empleado
     private Empleado convertirADocumentoAEmpleado(Document doc) {
         return new Empleado(
-                doc.getObjectId("_id"),         // ID de empleado
-                doc.getString("nombre"),        // Nombre del empleado
-                doc.getString("puesto"),        // Puesto del empleado
-                doc.getDouble("salario")        // Salario del empleado
+                doc.getObjectId("_id"), // ID de empleado
+                doc.getString("nombre"), // Nombre del empleado
+                doc.getString("puesto"), // Puesto del empleado
+                doc.getDouble("salario") // Salario del empleado
         );
     }
 
@@ -113,5 +115,22 @@ public class EmpleadoDAO implements IEmpleadoDAO {
             }
         }
         return empleados;
+    }
+
+    @Override
+    public Empleado buscarPorId(String idRepartidor) {
+        // Convertimos la cadena 'idRepartidor' a ObjectId, ya que MongoDB usa ObjectId como identificador
+        ObjectId objectId = new ObjectId(idRepartidor);
+
+        // Buscar el empleado por su ObjectId
+        Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
+
+        // Si encontramos el documento, lo convertimos a Empleado
+        if (doc != null) {
+            return convertirADocumentoAEmpleado(doc);
+        } else {
+            // Si no se encuentra el empleado, retornamos null
+            return null;
+        }
     }
 }
