@@ -4,7 +4,7 @@
  */
 package daos;
 
-import com.mongodb.client.FindIterable;
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -24,6 +24,13 @@ import java.util.List;
 public class EmpleadoDAO implements IEmpleadoDAO {
 
     private final MongoCollection<Document> coleccion;
+
+    public EmpleadoDAO() {
+        // Establecer la conexión directamente dentro del constructor
+        MongoClient mongoClient = new MongoClient("localhost", 27017);  // Ajusta el host y puerto
+        MongoDatabase baseDatos = mongoClient.getDatabase("panaderia"); // Nombre de la base de datos
+        this.coleccion = baseDatos.getCollection("empleados"); // Obtener la colección "empleados"
+    }
 
     public EmpleadoDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección "empleados" de la base de datos
@@ -131,6 +138,34 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         } else {
             // Si no se encuentra el empleado, retornamos null
             return null;
+        }
+    }
+
+    @Override
+    public List<Empleado> obtenerRepartidores() {
+        List<Empleado> repartidores = new ArrayList<>();
+        try (MongoCursor<Document> cursor = coleccion.find(Filters.eq("puesto", "Repartidor")).iterator()) {
+            while (cursor.hasNext()) {
+                Document doc = cursor.next();
+                Empleado empleado = convertirADocumentoAEmpleado(doc);
+                repartidores.add(empleado); // Añadir al listado
+            }
+        } catch (Exception e) {
+            System.err.println("Error al obtener repartidores: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return repartidores;
+    }
+
+    @Override
+    public Empleado obtenerRepartidorPorId(String id) throws Exception {
+        try {
+            ObjectId objectId = new ObjectId(id); // Convertir el ID a ObjectId
+            Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
+            return (doc != null) ? convertirADocumentoAEmpleado(doc) : null; // Convertir o retornar null si no se encuentra
+        } catch (Exception e) {
+            System.err.println("Error al obtener repartidor por ID: " + e.getMessage());
+            throw e; // Lanzamos la excepción para que la maneje la capa superior
         }
     }
 }

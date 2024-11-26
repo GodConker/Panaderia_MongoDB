@@ -4,10 +4,9 @@
  */
 package business.objects;
 
-import convertidores.EmpleadoConvertidor;
-import dtos.EmpleadoDTO;
 import entidades.Empleado;
 import interfaces.IEmpleadoDAO;
+import java.util.List;
 
 /**
  *
@@ -15,20 +14,19 @@ import interfaces.IEmpleadoDAO;
  */
 public class EmpleadoBO {
 
-    private final IEmpleadoDAO empleadoDAO;
+    private final IEmpleadoDAO empleadoDAO; // DAO inyectado para manejar la persistencia
 
-    public EmpleadoBO() {
-        this.empleadoDAO = null;
-    }
-
-    // Constructor de la clase, inyectando el DAO
     public EmpleadoBO(IEmpleadoDAO empleadoDAO) {
-        this.empleadoDAO = empleadoDAO;
+        this.empleadoDAO = empleadoDAO; // Inicializar el DAO
     }
 
-    public EmpleadoDTO obtenerRepartidorPorId(String idRepartidor) {
-        // Aquí puedes usar el convertidor para convertir un Empleado a EmpleadoDTO
-        Empleado empleado = empleadoDAO.buscarPorId(idRepartidor); // Esto devuelve un Empleado
-        return EmpleadoConvertidor.aDTO(empleado); // Convertirlo a DTO
+    // Obtener una lista de repartidores
+    public List<Empleado> obtenerRepartidores() throws Exception {
+        return empleadoDAO.obtenerRepartidores(); // Delegar al DAO
+    }
+
+    // Método para obtener un repartidor por su ID
+    public Empleado obtenerRepartidorPorId(String id) throws Exception {
+        return empleadoDAO.buscarPorId(id); // Delegar al método del DAO
     }
 }

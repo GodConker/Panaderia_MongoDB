@@ -421,13 +421,7 @@
         <Component class="javax.swing.JComboBox" name="CBXRepartidores">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="5">
-                <StringItem index="0" value="Antonio Valle"/>
-                <StringItem index="1" value="Daniel Castro"/>
-                <StringItem index="2" value="Ram&#xf3;n P&#xe9;rez"/>
-                <StringItem index="3" value="Isaac F&#xe9;lix"/>
-                <StringItem index="4" value=" "/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
           </Properties>
           <Events>

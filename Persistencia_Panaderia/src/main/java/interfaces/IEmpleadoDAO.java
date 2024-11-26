@@ -26,4 +26,8 @@ public interface IEmpleadoDAO {
     List<Empleado> buscarEmpleadosPorNombre(String nombre);
     
     Empleado buscarPorId(String idRepartidor);
+    
+    List<Empleado> obtenerRepartidores();
+    
+    Empleado obtenerRepartidorPorId(String id) throws Exception; // Retorna una entidad 
 }

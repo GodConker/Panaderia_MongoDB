@@ -1,16 +1,16 @@
 package GUIs;
 
-import business.objects.EmpleadoBO;
-import business.objects.EntregaBO;
 import control.Control;
 import dtos.EmpleadoDTO;
 import dtos.EntregaDTO;
 import dtos.ProductoDTO;
-import java.awt.HeadlessException;
 import java.util.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
 
 public class FrmEntregas extends javax.swing.JFrame {
+
+    private Control control;
 
     // Variables para los precios de los productos
     private final double precioDonas = 60.00;
@@ -21,6 +21,21 @@ public class FrmEntregas extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         TxtfMontoTotal.setEditable(false); // Asegurarse de que el campo sea solo lectura
+        control = new Control();  // Correctamente inicializada
+        cargarRepartidores();
+    }
+
+    private void cargarRepartidores() {
+        try {
+            CBXRepartidores.removeAllItems();
+            List<EmpleadoDTO> repartidores = control.obtenerRepartidores();
+            for (EmpleadoDTO repartidor : repartidores) {
+                CBXRepartidores.addItem(repartidor.getNombre());
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los repartidores: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -139,7 +154,6 @@ public class FrmEntregas extends javax.swing.JFrame {
         jLabel12.setForeground(new java.awt.Color(255, 255, 0));
         jLabel12.setText("Seleccione al repartidor:");
 
-        CBXRepartidores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Antonio Valle", "Daniel Castro", "Ramón Pérez", "Isaac Félix", " " }));
         CBXRepartidores.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CBXRepartidoresActionPerformed(evt);
@@ -325,95 +339,77 @@ public class FrmEntregas extends javax.swing.JFrame {
     private void BtnConfirmarEntregaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnConfirmarEntregaActionPerformed
 
         // Obtener los valores seleccionados de los combo boxes
-    String donasSeleccionadas = CBXCantidadPaqueteDonas.getSelectedItem().toString();
-    String empanadasSeleccionadas = CBXCantidadPaqueteEmpanadas.getSelectedItem().toString();
-    String coricosSeleccionados = CBXCantidadPaqueteCoricos.getSelectedItem().toString();
+        String donasSeleccionadas = CBXCantidadPaqueteDonas.getSelectedItem().toString();
+        String empanadasSeleccionadas = CBXCantidadPaqueteEmpanadas.getSelectedItem().toString();
+        String coricosSeleccionados = CBXCantidadPaqueteCoricos.getSelectedItem().toString();
 
-    // Verificar si todos los combo boxes están en "Ninguno"
-    if (donasSeleccionadas.equals("Ninguno") && empanadasSeleccionadas.equals("Ninguno") && coricosSeleccionados.equals("Ninguno")) {
-        JOptionPane.showMessageDialog(null, "Por favor, selecciona al menos un producto antes de confirmar la entrega.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return; // Salir del método si no se ha seleccionado ningún producto
-    }
-
-    String tiendaSeleccionada = CBXTiendas.getSelectedItem().toString(); // ID de la tienda
-    String repartidorSeleccionado = CBXRepartidores.getSelectedItem().toString(); // ID del repartidor
-    String montoTotal = TxtfMontoTotal.getText();
-
-    // Crear un resumen del pedido
-    String resumen = "Resumen del pedido:\n"
-            + "Donas: " + donasSeleccionadas + " paquetes\n"
-            + "Empanadas: " + empanadasSeleccionadas + " paquetes\n"
-            + "Coricos: " + coricosSeleccionados + " paquetes\n"
-            + "Tienda: " + tiendaSeleccionada + "\n"
-            + "Repartidor: " + repartidorSeleccionado + "\n"
-            + "Monto Total: $" + montoTotal + "\n\n"
-            + "¿Deseas confirmar el pedido?";
-
-    // Mostrar el resumen y pedir confirmación
-    int respuesta = JOptionPane.showConfirmDialog(null, resumen, "Confirmar Pedido", JOptionPane.YES_NO_OPTION);
-
-    if (respuesta == JOptionPane.YES_OPTION) {
-        try {
-            // Crear un EntregaDTO
-            EntregaDTO entregaDTO = new EntregaDTO();
-            entregaDTO.setFechaEntrega(new Date());
-            entregaDTO.setMontoTotal(Double.parseDouble(montoTotal));
-            entregaDTO.setIdTienda(tiendaSeleccionada); // ID de la tienda
-
-            // Obtener el repartidor (EmpleadoDTO) desde la capa de negocio (EmpleadoBO)
-            EmpleadoBO empleadoBO = new EmpleadoBO();  // Aquí se debe instanciar EmpleadoBO correctamente
-            EmpleadoDTO repartidorDTO = empleadoBO.obtenerRepartidorPorId(repartidorSeleccionado); // Ahora obtenemos un EmpleadoDTO
-
-            // Verificar si se obtuvo el repartidor
-            if (repartidorDTO != null) {
-                // Asignamos el EmpleadoDTO directamente a EntregaDTO
-                entregaDTO.setRepartidor(repartidorDTO); // Asignamos el EmpleadoDTO
-            } else {
-                JOptionPane.showMessageDialog(null, "Repartidor no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Asignar productos seleccionados
-            if (!donasSeleccionadas.equals("Ninguno")) {
-                entregaDTO.getProductos().add(new ProductoDTO("Donas", Integer.parseInt(donasSeleccionadas), 10.0)); // Ejemplo de precio
-            }
-            if (!empanadasSeleccionadas.equals("Ninguno")) {
-                entregaDTO.getProductos().add(new ProductoDTO("Empanadas", Integer.parseInt(empanadasSeleccionadas), 15.0)); // Ejemplo de precio
-            }
-            if (!coricosSeleccionados.equals("Ninguno")) {
-                entregaDTO.getProductos().add(new ProductoDTO("Coricos", Integer.parseInt(coricosSeleccionados), 8.0)); // Ejemplo de precio
-            }
-
-            // Usar el controlador para crear EntregaBO
-            EntregaBO entregaBO = Control.crearEntregaBO();  // Ahora la creación es centralizada en el controlador
-
-            // Registrar la entrega
-            entregaBO.registrarEntrega(entregaDTO); // Ahora el método acepta EntregaDTO
-
-            // Mostrar mensaje de éxito
-            JOptionPane.showMessageDialog(null, "¡Pedido registrado exitosamente!");
-
-            // Preguntar si desea hacer otra entrega
-            int otraEntrega = JOptionPane.showConfirmDialog(null, "¿Deseas hacer otra entrega?", "Nueva Entrega", JOptionPane.YES_NO_OPTION);
-
-            if (otraEntrega == JOptionPane.YES_OPTION) {
-                // Reiniciar campos para una nueva entrega
-                CBXCantidadPaqueteDonas.setSelectedItem("Ninguno");
-                CBXCantidadPaqueteEmpanadas.setSelectedItem("Ninguno");
-                CBXCantidadPaqueteCoricos.setSelectedItem("Ninguno");
-                TxtfMontoTotal.setText("0.00");
-            } else {
-                // Redirigir al menú principal si el usuario no quiere hacer otra entrega
-                redirigirAlMenu();
-            }
-        } catch (HeadlessException | NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error al registrar el pedido: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        // Verificar si todos los combo boxes están en "Ninguno"
+        if (donasSeleccionadas.equals("Ninguno") && empanadasSeleccionadas.equals("Ninguno") && coricosSeleccionados.equals("Ninguno")) {
+            JOptionPane.showMessageDialog(null, "Por favor, selecciona al menos un producto antes de confirmar la entrega.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return; // Salir del método si no se ha seleccionado ningún producto
         }
-    } else {
-        // Mostrar mensaje de cancelación
-        JOptionPane.showMessageDialog(null, "Pedido cancelado.");
+
+        String tiendaSeleccionada = CBXTiendas.getSelectedItem().toString(); // ID de la tienda
+        String repartidorSeleccionado = CBXRepartidores.getSelectedItem().toString(); // ID del repartidor
+        String montoTotal = TxtfMontoTotal.getText();
+
+        // Crear un resumen del pedido
+        String resumen = "Resumen del pedido:\n"
+                + "Donas: " + donasSeleccionadas + " paquetes\n"
+                + "Empanadas: " + empanadasSeleccionadas + " paquetes\n"
+                + "Coricos: " + coricosSeleccionados + " paquetes\n"
+                + "Tienda: " + tiendaSeleccionada + "\n"
+                + "Repartidor: " + repartidorSeleccionado + "\n"
+                + "Monto Total: $" + montoTotal + "\n\n"
+                + "¿Deseas confirmar el pedido?";
+
+        // Mostrar el resumen y pedir confirmación
+        int respuesta = JOptionPane.showConfirmDialog(null, resumen, "Confirmar Pedido", JOptionPane.YES_NO_OPTION);
+
+        // Confirmar y registrar la entrega
+        respuesta = JOptionPane.showConfirmDialog(null, resumen, "Confirmar Pedido", JOptionPane.YES_NO_OPTION);
+
+        if (respuesta == JOptionPane.YES_OPTION) {
+            try {
+                // Crear EntregaDTO y obtener repartidor
+                EntregaDTO entregaDTO = new EntregaDTO();
+                entregaDTO.setFechaEntrega(new Date());
+                entregaDTO.setMontoTotal(Double.parseDouble(montoTotal));
+                entregaDTO.setIdTienda(tiendaSeleccionada);
+
+                EmpleadoDTO repartidorDTO = control.obtenerRepartidorPorId(repartidorSeleccionado);
+                if (repartidorDTO == null) {
+                    JOptionPane.showMessageDialog(this, "Repartidor no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                entregaDTO.setRepartidor(repartidorDTO);
+
+                // Asignar productos seleccionados al DTO
+                if (!donasSeleccionadas.equals("Ninguno")) {
+                    entregaDTO.getProductos().add(new ProductoDTO("Donas", Integer.parseInt(donasSeleccionadas), precioDonas));
+                }
+                if (!empanadasSeleccionadas.equals("Ninguno")) {
+                    entregaDTO.getProductos().add(new ProductoDTO("Empanadas", Integer.parseInt(empanadasSeleccionadas), precioEmpanadas));
+                }
+                if (!coricosSeleccionados.equals("Ninguno")) {
+                    entregaDTO.getProductos().add(new ProductoDTO("Coricos", Integer.parseInt(coricosSeleccionados), precioCoricos));
+                }
+
+                // Usar el controlador para registrar la entrega
+                control.registrarEntrega(entregaDTO);
+
+                // Mostrar mensaje de éxito
+                JOptionPane.showMessageDialog(this, "¡Pedido registrado exitosamente!");
+                // Reiniciar campos o redirigir según sea necesario
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al registrar el pedido: " + e.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Pedido cancelado.");
+        }
     }
-}
 
 // Método para redirigir al menú principal
     private void redirigirAlMenu() {
@@ -459,6 +455,7 @@ public class FrmEntregas extends javax.swing.JFrame {
 
     private void CBXRepartidoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CBXRepartidoresActionPerformed
         // TODO add your handling code here:
+
     }//GEN-LAST:event_CBXRepartidoresActionPerformed
 
     private void TxtfMontoTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TxtfMontoTotalActionPerformed
