@@ -25,7 +25,7 @@ public class InventarioDAO implements IInventarioDAO {
 
     public InventarioDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección de inventarios dentro de la base de datos
-        this.coleccion = baseDatos.getCollection("inventarios");
+        this.coleccion = baseDatos.getCollection("inventario");
     }
 
     // Método auxiliar para convertir un Document a Inventario

@@ -5,32 +5,24 @@
 package entidades;
 
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Reference;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@Entity("Entrega")  // Nombre de la colección en MongoDB
 public class Entrega implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
     private ObjectId id;
 
     private Date fechaEntrega;
 
-    @Reference
     private Tienda tienda;
 
-    @Reference
     private Empleado repartidor;
 
     // Relación directa con Producto
-    @Reference
     private List<Producto> productos;
 
     private double montoTotal;
@@ -121,10 +113,10 @@ public class Entrega implements Serializable {
     public void setPrecios(List<Double> precios) {
         this.precios = precios;
     }
-    
+
     /**
      * Retorna el ID como un String.
-     * 
+     *
      * @return El ID en formato String.
      */
     public String getIdAsString() {
@@ -133,7 +125,7 @@ public class Entrega implements Serializable {
 
     /**
      * Convierte un String en ObjectId y lo asigna al campo ID.
-     * 
+     *
      * @param id El ID en formato String.
      */
     public void setIdFromString(String id) {

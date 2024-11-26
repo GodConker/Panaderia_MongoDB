@@ -3,9 +3,9 @@
  */
 package conexion;
 
-import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoClient;
 
 public class ConexionMongoDB {
     private static final String CADENA_CONEXION = "mongodb://localhost:27017";
@@ -24,7 +24,8 @@ public class ConexionMongoDB {
     // Método privado para establecer la conexión
     private static void conectar() {
         try {
-            mongoClient = (MongoClient) MongoClients.create(CADENA_CONEXION);  // Corregido aquí
+            // Usamos MongoClients para crear la conexión a la base de datos
+            mongoClient = MongoClients.create(CADENA_CONEXION);
             db = mongoClient.getDatabase(NOMBRE_BASE_DE_DATOS);
             System.out.println("Conexión a MongoDB exitosa!");
         } catch (Exception e) {

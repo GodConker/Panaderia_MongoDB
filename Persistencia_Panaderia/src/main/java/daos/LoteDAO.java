@@ -27,7 +27,7 @@ public class LoteDAO implements ILoteDAO {
 
     public LoteDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección de lotes dentro de la base de datos
-        this.coleccion = baseDatos.getCollection("lotes");
+        this.coleccion = baseDatos.getCollection("lote");
     }
 
     @Override

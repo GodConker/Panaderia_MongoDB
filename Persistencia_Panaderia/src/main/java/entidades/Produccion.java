@@ -5,9 +5,6 @@
 package entidades;
 
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Reference;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,17 +12,17 @@ import java.util.Date;
 /**
  * Clase que representa la entidad 'Produccion' en MongoDB
  */
-@Entity("Produccion")  // Nombre de la colección en MongoDB
+
 public class Produccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id  // El identificador de la entidad (MongoDB usa ObjectId)
+
     private ObjectId id;
 
     private Date fechaProduccion;
 
-    @Reference  // Relación con Empleado (Referencia en MongoDB)
+
     private Empleado empleado;
 
     // Constructor vacío

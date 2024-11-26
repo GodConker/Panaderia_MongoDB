@@ -5,20 +5,18 @@
 package entidades;
 
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
 
 import java.io.Serializable;
 
 /**
  * Clase que representa la entidad 'Empleado' en MongoDB
  */
-@Entity("Empleado")  // Nombre de la colección en MongoDB
+
 public class Empleado implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id  // El identificador de la entidad (MongoDB usa ObjectId)
+
     private ObjectId id;
 
     private String nombre;

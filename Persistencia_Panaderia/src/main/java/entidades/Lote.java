@@ -5,9 +5,6 @@
 package entidades;
 
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Reference;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,19 +12,18 @@ import java.util.Date;
 /**
  * Clase que representa la entidad 'Lote' en MongoDB
  */
-@Entity("Lote")  // Nombre de la colección en MongoDB
+
 public class Lote implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id  // El identificador de la entidad (MongoDB usa ObjectId)
+
     private ObjectId id;
 
     private int cantidadProducida;
     private Date fechaProduccion;
     private Date fechaCaducidad;
 
-    @Reference  // Relación con Producto (Referencia en MongoDB)
     private Producto producto;
 
     // Constructor vacío

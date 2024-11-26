@@ -4,9 +4,6 @@
 package entidades;
 
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Reference;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -16,18 +13,18 @@ import java.util.Date;
  *
  * @author danie
  */
-@Entity("Inventario")  // Nombre de la colección en MongoDB
+
 public class Inventario implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id  // El identificador de la entidad
+
     private ObjectId id;
 
     private int cantidadDisponible;
     private Date fechaActualizacion;
 
-    @Reference  // Relación con el objeto Producto
+
     private Producto producto;
 
     public Inventario() {

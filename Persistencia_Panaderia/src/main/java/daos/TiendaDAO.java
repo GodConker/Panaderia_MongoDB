@@ -24,7 +24,7 @@ public class TiendaDAO implements ITiendaDAO {
 
     public TiendaDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección de tiendas dentro de la base de datos
-        this.coleccion = baseDatos.getCollection("tiendas");
+        this.coleccion = baseDatos.getCollection("tienda");
     }
 
     @Override

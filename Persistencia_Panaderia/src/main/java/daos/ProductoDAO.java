@@ -24,7 +24,7 @@ public class ProductoDAO implements IProductoDAO {
 
     public ProductoDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección de productos dentro de la base de datos
-        this.coleccion = baseDatos.getCollection("productos");
+        this.coleccion = baseDatos.getCollection("producto");
     }
 
     // Método auxiliar para convertir un Document a Producto

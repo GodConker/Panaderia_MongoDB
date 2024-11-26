@@ -4,7 +4,8 @@
  */
 package daos;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -26,26 +27,36 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     private final MongoCollection<Document> coleccion;
 
     public EmpleadoDAO() {
-        // Establecer la conexión directamente dentro del constructor
-        MongoClient mongoClient = new MongoClient("localhost", 27017);  // Ajusta el host y puerto
+        // Establecer la conexión directamente dentro del constructor con la nueva forma de crear MongoClient
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");  // Usando MongoClients.create()
         MongoDatabase baseDatos = mongoClient.getDatabase("panaderia"); // Nombre de la base de datos
-        this.coleccion = baseDatos.getCollection("empleados"); // Obtener la colección "empleados"
+        this.coleccion = baseDatos.getCollection("empleado"); // Obtener la colección "empleados"
     }
 
+    // Constructor con base de datos ya establecida
     public EmpleadoDAO(MongoDatabase baseDatos) {
-        // Conectamos a la colección "empleados" de la base de datos
-        this.coleccion = baseDatos.getCollection("empleados");
+        this.coleccion = baseDatos.getCollection("empleado");
     }
 
     // Método auxiliar para convertir un Document a Empleado
     private Empleado convertirADocumentoAEmpleado(Document doc) {
-        return new Empleado(
-                doc.getObjectId("_id"), // ID de empleado
-                doc.getString("nombre"), // Nombre del empleado
-                doc.getString("puesto"), // Puesto del empleado
-                doc.getDouble("salario") // Salario del empleado
-        );
-    }
+    Object salarioObj = doc.get("salario");
+    Double salario = null;
+
+        switch (salarioObj) {
+            case Integer integer -> salario = integer.doubleValue();  // Convertir Integer a Double
+            case Double aDouble -> salario = aDouble;  // Ya es un Double
+            default -> {
+            }
+        }
+
+    return new Empleado(
+            doc.getObjectId("_id"), // ID de empleado
+            doc.getString("nombre"), // Nombre del empleado
+            doc.getString("puesto"), // Puesto del empleado
+            salario // Salario del empleado
+    );
+}
 
     // Método auxiliar para convertir Empleado a Document
     private Document convertirAEmpleadoADocumento(Empleado empleado) {

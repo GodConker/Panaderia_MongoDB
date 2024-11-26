@@ -26,7 +26,7 @@ public class ProduccionDAO implements IProduccionDAO {
 
     public ProduccionDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección de producciones dentro de la base de datos
-        this.coleccion = baseDatos.getCollection("producciones");
+        this.coleccion = baseDatos.getCollection("produccion");
     }
 
     @Override

@@ -33,7 +33,7 @@ public class EntregaDAO implements IEntregaDAO {
 
     public EntregaDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección "entregas" de la base de datos
-        this.coleccion = baseDatos.getCollection("entregas");
+        this.coleccion = baseDatos.getCollection("entrega");
     }
 
     // Método auxiliar para convertir un Document a Entrega
