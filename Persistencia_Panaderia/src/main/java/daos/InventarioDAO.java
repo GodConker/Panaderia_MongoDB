@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import conexion.ConexionMongoDB;
 import entidades.Inventario;
 import entidades.Producto;
 import interfaces.IInventarioDAO;
@@ -23,8 +24,9 @@ public class InventarioDAO implements IInventarioDAO {
 
     private final MongoCollection<Document> coleccion;
 
-    public InventarioDAO(MongoDatabase baseDatos) {
+    public InventarioDAO() {
         // Conectamos a la colección de inventarios dentro de la base de datos
+        MongoDatabase baseDatos = ConexionMongoDB.getDatabase();
         this.coleccion = baseDatos.getCollection("inventario");
     }
 
@@ -34,16 +36,16 @@ public class InventarioDAO implements IInventarioDAO {
         producto.setId(doc.getObjectId("idProducto")); // Suponiendo que "idProducto" es un campo en MongoDB
 
         return new Inventario(
-            doc.getObjectId("idInventario"),
-            producto, // Asumimos que Producto se maneja por su ID en el Inventario
-            doc.getInteger("cantidad")
+                doc.getObjectId("idInventario"),
+                producto, // Asumimos que Producto se maneja por su ID en el Inventario
+                doc.getInteger("cantidad")
         );
     }
 
     // Método auxiliar para convertir Inventario a Document
     private Document convertirAInventarioADocumento(Inventario inventario) {
         return new Document("idInventario", inventario.getId())
-                .append("idProducto", inventario.getProducto().getId())  // Se usa el ID del producto
+                .append("idProducto", inventario.getProducto().getId()) // Se usa el ID del producto
                 .append("cantidad", inventario.getCantidadDisponible());
     }
 
@@ -112,5 +114,22 @@ public class InventarioDAO implements IInventarioDAO {
             }
         }
         return inventarios;
+    }
+
+    @Override
+    public int obtenerCantidadDisponiblePorProducto(String idProducto) {
+        try {
+            // Buscar en la colección usando el idProducto
+            Document doc = coleccion.find(Filters.eq("id_producto", idProducto)).first();
+
+            // Si encontramos el documento, retornamos la cantidad disponible
+            if (doc != null) {
+                return doc.getInteger("cantidadDisponible", 0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Si no se encuentra el producto o ocurre un error, retornamos 0
+        return 0;
     }
 }

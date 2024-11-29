@@ -9,5 +9,5 @@ package interfaces;
  * @author danie
  */
 public interface IInventarioBO {
-    
+    int obtenerCantidadDisponible(String idProducto);
 }

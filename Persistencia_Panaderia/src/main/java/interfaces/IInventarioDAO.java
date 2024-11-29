@@ -24,4 +24,6 @@ public interface IInventarioDAO {
     boolean eliminarProductoDelInventario(int id);
 
     List<Inventario> buscarInventarioPorNombre(String nombre);
+    
+    int obtenerCantidadDisponiblePorProducto(String idProducto);
 }

@@ -18,7 +18,7 @@ public class Empleado implements Serializable {
 
 
     private ObjectId id;
-
+     private int idEmpleado;
     private String nombre;
     private String cargo;
     private Double salario;
@@ -49,6 +49,14 @@ public class Empleado implements Serializable {
 
     public void setId(ObjectId id) {
         this.id = id;
+    }
+
+    public int getIdEmpleado() {
+        return idEmpleado;
+    }
+
+    public void setIdEmpleado(int idEmpleado) {
+        this.idEmpleado = idEmpleado;
     }
     
     // Métodos para encapsular ObjectId como String
@@ -105,6 +113,6 @@ public class Empleado implements Serializable {
 
     @Override
     public String toString() {
-        return "entidades.Empleado[ id=" + id + " ]";
+        return nombre; 
     }
 }

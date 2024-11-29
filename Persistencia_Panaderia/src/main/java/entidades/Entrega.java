@@ -7,6 +7,7 @@ package entidades;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class Entrega implements Serializable {
 
     // Constructores
     public Entrega() {
+        this.productos = new ArrayList<>();
     }
 
     public Entrega(Date fechaEntrega, Tienda tienda, Empleado repartidor, List<Producto> productos, double montoTotal) {

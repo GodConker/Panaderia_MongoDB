@@ -40,23 +40,25 @@ public class EmpleadoDAO implements IEmpleadoDAO {
 
     // Método auxiliar para convertir un Document a Empleado
     private Empleado convertirADocumentoAEmpleado(Document doc) {
-    Object salarioObj = doc.get("salario");
-    Double salario = null;
+        Object salarioObj = doc.get("salario");
+        Double salario = null;
 
         switch (salarioObj) {
-            case Integer integer -> salario = integer.doubleValue();  // Convertir Integer a Double
-            case Double aDouble -> salario = aDouble;  // Ya es un Double
+            case Integer integer ->
+                salario = integer.doubleValue();  // Convertir Integer a Double
+            case Double aDouble ->
+                salario = aDouble;  // Ya es un Double
             default -> {
             }
         }
 
-    return new Empleado(
-            doc.getObjectId("_id"), // ID de empleado
-            doc.getString("nombre"), // Nombre del empleado
-            doc.getString("puesto"), // Puesto del empleado
-            salario // Salario del empleado
-    );
-}
+        return new Empleado(
+                doc.getObjectId("_id"), // ID de empleado
+                doc.getString("nombre"), // Nombre del empleado
+                doc.getString("puesto"), // Puesto del empleado
+                salario // Salario del empleado
+        );
+    }
 
     // Método auxiliar para convertir Empleado a Document
     private Document convertirAEmpleadoADocumento(Empleado empleado) {
@@ -146,6 +148,20 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         // Si encontramos el documento, lo convertimos a Empleado
         if (doc != null) {
             return convertirADocumentoAEmpleado(doc);
+        } else {
+            // Si no se encuentra el empleado, retornamos null
+            return null;
+        }
+    }
+
+    @Override
+    public Empleado buscarPorId(int idEmpleado) {
+        // Buscar el empleado por su idEmpleado (no por _id)
+        Document doc = coleccion.find(Filters.eq("idEmpleado", idEmpleado)).first();
+
+        // Si encontramos el documento, lo convertimos a Empleado
+        if (doc != null) {
+            return convertirADocumentoAEmpleado(doc);  // Método que convierte el Document a un objeto Empleado
         } else {
             // Si no se encuentra el empleado, retornamos null
             return null;

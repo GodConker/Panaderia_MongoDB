@@ -9,17 +9,18 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Clase DTO para la entidad 'Entrega'. 
- * Usada para transferir datos entre las capas de negocio y presentación.
+ * Clase DTO para la entidad 'Entrega'. Usada para transferir datos entre las
+ * capas de negocio y presentación.
  */
 public class EntregaDTO {
+
     private String id;  // Usamos String en lugar de ObjectId
     private Date fechaEntrega;
     private String idTienda;  // Usamos String para representar el ID de la tienda
-    private final List<ProductoDTO> productos;
+    private List<ProductoDTO> productos;
     private double montoTotal;
     private EmpleadoDTO repartidor;  // Cambio aquí para usar la entidad Empleado
-    
+
     // Constructor de la clase EntregaDTO
     public EntregaDTO() {
         this.productos = new ArrayList<>(); // Inicializa la lista de productos
@@ -49,10 +50,14 @@ public class EntregaDTO {
     public void setIdTienda(String idTienda) {
         this.idTienda = idTienda;
     }
-    
+
     // Método para obtener los productos
     public List<ProductoDTO> getProductos() {
         return productos;
+    }
+
+    public void setProductos(List<ProductoDTO> productos) {
+        this.productos = productos;
     }
 
     // Método para agregar un producto a la lista
@@ -66,7 +71,7 @@ public class EntregaDTO {
             System.out.println("Producto: " + producto.getNombre() + ", Cantidad: " + producto.getCantidad() + ", Precio: " + producto.getPrecio());
         }
     }
-    
+
     // Método para establecer el monto total
     public void setMontoTotal(double montoTotal) {
         this.montoTotal = montoTotal;

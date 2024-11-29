@@ -29,4 +29,9 @@ public class EmpleadoBO {
     public Empleado obtenerRepartidorPorId(String id) throws Exception {
         return empleadoDAO.buscarPorId(id); // Delegar al método del DAO
     }
+
+    // Método para obtener un repartidor por su ID (ahora usando int idEmpleado)
+    public Empleado obtenerRepartidorPorId(int idEmpleado) throws Exception {
+        return empleadoDAO.buscarPorId(idEmpleado); // Delegar al método del DAO
+    }
 }

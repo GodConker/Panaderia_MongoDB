@@ -4,10 +4,24 @@
  */
 package business.objects;
 
+import interfaces.IInventarioBO;
+import interfaces.IInventarioDAO;
+
 /**
  *
  * @author danie
  */
-public class InventarioBO {
-    
+public class InventarioBO implements IInventarioBO {
+
+    private IInventarioDAO inventarioDAO;
+
+    public InventarioBO(IInventarioDAO inventarioDAO) {
+        this.inventarioDAO = inventarioDAO;
+    }
+
+    @Override
+    public int obtenerCantidadDisponible(String idProducto) {
+        return inventarioDAO.obtenerCantidadDisponiblePorProducto(idProducto);
+    }
 }
+

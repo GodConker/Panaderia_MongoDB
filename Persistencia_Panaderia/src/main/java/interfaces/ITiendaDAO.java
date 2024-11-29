@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface ITiendaDAO {
 
-    List<Tienda> obtenerTodasTiendas();
+    List<Tienda> obtenerTodasLasTiendas();
 
     Tienda obtenerTiendaPorID(int id);
 
@@ -24,4 +24,6 @@ public interface ITiendaDAO {
     boolean eliminarTienda(int id);
 
     List<Tienda> buscarTiendasPorNombre(String nombre);
+    
+    Tienda buscarTiendaPorNombre(String nombre);
 }

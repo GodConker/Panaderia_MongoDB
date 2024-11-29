@@ -5,7 +5,9 @@
 package dtos;
 
 public class EmpleadoDTO {
+
     private String id;  // Usamos String en lugar de ObjectId
+    private int idEmpleado;
     private String nombre;
     private String cargo;
     private Double salario;  // Tipo Double para alinearse con la clase Empleado
@@ -17,6 +19,14 @@ public class EmpleadoDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getIdEmpleado() {
+        return idEmpleado;
+    }
+
+    public void setIdEmpleado(int idEmpleado) {
+        this.idEmpleado = idEmpleado;
     }
 
     public String getNombre() {
@@ -45,11 +55,15 @@ public class EmpleadoDTO {
 
     @Override
     public String toString() {
-        return "EmpleadoDTO{" +
-                "id='" + id + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", cargo='" + cargo + '\'' +
-                ", salario=" + salario +
-                '}';
+        return "EmpleadoDTO{"
+                + "id='" + id + '\''
+                + ", nombre='" + nombre + '\''
+                + ", cargo='" + cargo + '\''
+                + ", salario=" + salario
+                + '}';
+    }
+
+    public String obtenerNombre() {
+        return this.nombre;
     }
 }

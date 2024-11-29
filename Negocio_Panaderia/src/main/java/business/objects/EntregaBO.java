@@ -9,33 +9,41 @@ import dtos.EntregaDTO;
 import entidades.Entrega;
 import excepciones.BOException;
 import interfaces.IEntregaDAO;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import interfaces.IInventarioDAO;
 
 /**
  *
  * @author danie
  */
 public class EntregaBO {
-    private final IEntregaDAO entregaDAO;
 
-    public EntregaBO(IEntregaDAO entregaDAO) {
+    private final IEntregaDAO entregaDAO;
+    private final IInventarioDAO inventarioDAO;
+
+    public EntregaBO(IEntregaDAO entregaDAO, IInventarioDAO inventarioDAO) {
         this.entregaDAO = entregaDAO;
+        this.inventarioDAO = inventarioDAO;
     }
 
-    public void registrarEntrega(EntregaDTO entregaDTO) {
+    public void registrarEntrega(EntregaDTO entregaDTO) throws BOException {
         if (entregaDTO.getMontoTotal() <= 0) {
-            try {
-                throw new BOException("El monto total debe ser mayor a 0.");
-            } catch (BOException ex) {
-                Logger.getLogger(EntregaBO.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            throw new BOException("El monto total debe ser mayor a 0.");
         }
 
-        // Convertir el DTO a Entidad
         Entrega entrega = EntregaConvertidor.aEntidad(entregaDTO);
-
-        // Llamar a la capa de persistencia
         entregaDAO.guardarEntrega(entrega);
     }
+
+    public int calcularPaquetesDisponibles(int cantidadDisponible) {
+        return Math.min(cantidadDisponible / 6, 10);
+    }
+
+    public int calcularPaquetesDisponiblesPorProducto(String idProducto) {
+        // Obtener la cantidad disponible del producto desde InventarioDAO
+        int cantidadDisponible = inventarioDAO.obtenerCantidadDisponiblePorProducto(idProducto);
+
+        // Calcular el número de paquetes disponibles
+        return calcularPaquetesDisponibles(cantidadDisponible);
+    }
+
 }
