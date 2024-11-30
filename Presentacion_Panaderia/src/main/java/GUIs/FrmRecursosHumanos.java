@@ -1,21 +1,123 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+/* * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package GUIs;
 
+import control.Control;
+import dtos.EmpleadoDTO;
+import java.text.DecimalFormat;
+import java.util.List;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
 /**
- *
  * @author Dell
  */
 public class FrmRecursosHumanos extends javax.swing.JFrame {
 
+    // Declarar el Control
+    private Control control;
+
     /**
-     * Creates new form otroframe
+     * Creates new form FrmRecursosHumanos
      */
     public FrmRecursosHumanos() {
         initComponents();
+        setLocationRelativeTo(null);
+        control = new Control();
+        llenarTablaEmpleados();
+        agregarListenerSeleccionFila();
+        configurarComboBoxCargo();
     }
+
+    private void llenarTablaEmpleados() {
+        // Obtener la lista de empleados
+        List<EmpleadoDTO> listaEmpleados = control.obtenerRepartidores();
+
+        // Obtener el modelo de la tabla
+        DefaultTableModel model = (DefaultTableModel) TableEmpleados.getModel();
+
+        // Limpiar la tabla
+        model.setRowCount(0);
+
+        // Llenar la tabla con los datos de los empleados
+        for (EmpleadoDTO empleado : listaEmpleados) {
+            Object[] fila = new Object[3];
+            fila[0] = empleado.getNombre();
+            fila[1] = empleado.getCargo();
+            fila[2] = empleado.getSalario();
+
+            // Añadir la fila al modelo
+            model.addRow(fila);
+        }
+
+        // Configurar la tabla para que no sea editable
+        TableEmpleados.setDefaultEditor(Object.class, null); // Deshabilitar edición
+    }
+
+    private void agregarListenerSeleccionFila() {
+        // Agregar un listener para la selección de filas
+        TableEmpleados.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                // Verificar que no se haya deseleccionado la fila
+                if (!e.getValueIsAdjusting()) {
+                    int row = TableEmpleados.getSelectedRow();
+
+                    // Si hay una fila seleccionada
+                    if (row >= 0) {
+                        // Obtener el modelo de la tabla
+                        DefaultTableModel model = (DefaultTableModel) TableEmpleados.getModel();
+
+                        // Obtener los datos de la fila seleccionada
+                        String nombre = model.getValueAt(row, 0).toString();
+                        String cargo = model.getValueAt(row, 1).toString();
+                        String salario = model.getValueAt(row, 2).toString();
+
+                        // Establecer los valores en los JTextField y JComboBox
+                        TxtfNombreEmpleado.setText(nombre);
+                        CBXCargoEmpleado.setSelectedItem(cargo);  // Suponiendo que CBXCargoEmpleado es un JComboBox
+                        TxtfSalarioEmpleado.setText(salario);
+                    }
+                }
+            }
+        });
+    }
+
+    // Configurar el JComboBox de Cargos
+    private void configurarComboBoxCargo() {
+
+        // Deshabilitar la edición del JTextField de salario
+        TxtfSalarioEmpleado.setEditable(false);
+
+        // Agregar un Listener para cambiar el salario según el cargo seleccionado
+        CBXCargoEmpleado.addActionListener(evt -> actualizarSalarioPorCargo());
+    }
+
+    // Actualizar el salario dependiendo del cargo seleccionado
+    private void actualizarSalarioPorCargo() {
+        // Obtener el cargo seleccionado
+        String cargo = (String) CBXCargoEmpleado.getSelectedItem();
+        
+        // Establecer el salario dependiendo del cargo con formato decimal
+        DecimalFormat df = new DecimalFormat("#.00");  // Formato para 2 decimales
+        switch (cargo) {
+            case "Repartidor":
+                TxtfSalarioEmpleado.setText(df.format(4000.00)); // 4000.00 con dos decimales
+                break;
+            case "Cajero":
+                TxtfSalarioEmpleado.setText(df.format(2000.00)); // 2000.00 con dos decimales
+                break;
+            case "Panadero":
+                TxtfSalarioEmpleado.setText(df.format(6000.00)); // 6000.00 con dos decimales
+                break;
+            default:
+                TxtfSalarioEmpleado.setText("0.00");
+                break;
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -34,8 +136,8 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
         TableEmpleados = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         TxtfSalarioEmpleado = new javax.swing.JTextField();
-        BtnAgregarEmpleado = new javax.swing.JButton();
-        BtnRegresarMenu1 = new javax.swing.JButton();
+        BtnAgregarActualizarEmpleado = new javax.swing.JButton();
+        BtnRegresarMenu = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         TxtfNombreEmpleado = new javax.swing.JTextField();
         BtnEliminarEmpleado = new javax.swing.JButton();
@@ -78,17 +180,17 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
             }
         });
 
-        BtnAgregarEmpleado.setText("Agregar");
-        BtnAgregarEmpleado.addActionListener(new java.awt.event.ActionListener() {
+        BtnAgregarActualizarEmpleado.setText("Agregar");
+        BtnAgregarActualizarEmpleado.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BtnAgregarEmpleadoActionPerformed(evt);
+                BtnAgregarActualizarEmpleadoActionPerformed(evt);
             }
         });
 
-        BtnRegresarMenu1.setText("Regresar al Menú");
-        BtnRegresarMenu1.addActionListener(new java.awt.event.ActionListener() {
+        BtnRegresarMenu.setText("Regresar al Menú");
+        BtnRegresarMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BtnRegresarMenu1ActionPerformed(evt);
+                BtnRegresarMenuActionPerformed(evt);
             }
         });
 
@@ -157,10 +259,10 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
                         .addGap(164, 164, 164)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(BtnAgregarEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(BtnAgregarActualizarEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(BtnEliminarEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(BtnRegresarMenu1, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(BtnRegresarMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -192,10 +294,10 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
                             .addComponent(TxtfSalarioEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(BtnAgregarEmpleado)
+                    .addComponent(BtnAgregarActualizarEmpleado)
                     .addComponent(BtnEliminarEmpleado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(BtnRegresarMenu1)
+                .addComponent(BtnRegresarMenu)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -213,18 +315,18 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void BtnAgregarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAgregarEmpleadoActionPerformed
+    private void BtnAgregarActualizarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAgregarActualizarEmpleadoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_BtnAgregarEmpleadoActionPerformed
+    }//GEN-LAST:event_BtnAgregarActualizarEmpleadoActionPerformed
 
-    private void BtnRegresarMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRegresarMenu1ActionPerformed
+    private void BtnRegresarMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRegresarMenuActionPerformed
         // Crear una nueva instancia de FrmMenu
         FrmMenu menu = new FrmMenu();
         // Hacer visible la ventana FrmMenu
         menu.setVisible(true);
         // Cerrar la ventana actual
         this.dispose();
-    }//GEN-LAST:event_BtnRegresarMenu1ActionPerformed
+    }//GEN-LAST:event_BtnRegresarMenuActionPerformed
 
     private void TxtfNombreEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TxtfNombreEmpleadoActionPerformed
         // TODO add your handling code here:
@@ -279,9 +381,9 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BtnAgregarEmpleado;
+    private javax.swing.JButton BtnAgregarActualizarEmpleado;
     private javax.swing.JButton BtnEliminarEmpleado;
-    private javax.swing.JButton BtnRegresarMenu1;
+    private javax.swing.JButton BtnRegresarMenu;
     private javax.swing.JComboBox<String> CBXCargoEmpleado;
     private javax.swing.JTable TableEmpleados;
     private javax.swing.JTextField TxtfNombreEmpleado;
