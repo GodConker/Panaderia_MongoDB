@@ -5,6 +5,7 @@ package GUIs;
 
 import control.Control;
 import dtos.EmpleadoDTO;
+import java.text.DecimalFormat;
 import java.util.List;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -27,6 +28,7 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
         control = new Control();
         llenarTablaEmpleados();
         agregarListenerSeleccionFila();
+        configurarComboBoxCargo();
     }
 
     private void llenarTablaEmpleados() {
@@ -82,6 +84,40 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
             }
         });
     }
+
+    // Configurar el JComboBox de Cargos
+    private void configurarComboBoxCargo() {
+
+        // Deshabilitar la edición del JTextField de salario
+        TxtfSalarioEmpleado.setEditable(false);
+
+        // Agregar un Listener para cambiar el salario según el cargo seleccionado
+        CBXCargoEmpleado.addActionListener(evt -> actualizarSalarioPorCargo());
+    }
+
+    // Actualizar el salario dependiendo del cargo seleccionado
+    private void actualizarSalarioPorCargo() {
+        // Obtener el cargo seleccionado
+        String cargo = (String) CBXCargoEmpleado.getSelectedItem();
+        
+        // Establecer el salario dependiendo del cargo con formato decimal
+        DecimalFormat df = new DecimalFormat("#.00");  // Formato para 2 decimales
+        switch (cargo) {
+            case "Repartidor":
+                TxtfSalarioEmpleado.setText(df.format(4000.00)); // 4000.00 con dos decimales
+                break;
+            case "Cajero":
+                TxtfSalarioEmpleado.setText(df.format(2000.00)); // 2000.00 con dos decimales
+                break;
+            case "Panadero":
+                TxtfSalarioEmpleado.setText(df.format(6000.00)); // 6000.00 con dos decimales
+                break;
+            default:
+                TxtfSalarioEmpleado.setText("0.00");
+                break;
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
