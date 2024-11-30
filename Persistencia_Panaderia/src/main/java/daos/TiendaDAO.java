@@ -37,7 +37,7 @@ public class TiendaDAO implements ITiendaDAO {
             while (cursor.hasNext()) {
                 Document doc = cursor.next();
                 Tienda tienda = new Tienda(
-                        doc.getObjectId("idTienda"), // idTienda
+                        doc.getString("idTienda"), // idTienda
                         doc.getString("nombre"),
                         doc.getString("ubicacionCoordenadas"),
                         doc.getString("telefono"),
@@ -55,7 +55,7 @@ public class TiendaDAO implements ITiendaDAO {
         Document doc = coleccion.find(Filters.eq("idTienda", id)).first();
         if (doc != null) {
             return new Tienda(
-                    doc.getObjectId("idTienda"),
+                    doc.getString("idTienda"),
                     doc.getString("nombre"),
                     doc.getString("ubicacionCoordenadas"),
                     doc.getString("telefono"),
@@ -120,7 +120,7 @@ public class TiendaDAO implements ITiendaDAO {
             while (cursor.hasNext()) {
                 Document doc = cursor.next();
                 Tienda tienda = new Tienda(
-                        doc.getObjectId("idTienda"),
+                        doc.getString("_id"), // Corrige el campo del ObjectId
                         doc.getString("nombre"),
                         doc.getString("ubicacionCoordenadas"),
                         doc.getString("telefono"),
@@ -138,8 +138,9 @@ public class TiendaDAO implements ITiendaDAO {
         Document doc = coleccion.find(Filters.regex("nombre", "^" + nombre + "$", "i")).first();
 
         if (doc != null) {
+            String idAsString = doc.get("_id").toString(); 
             return new Tienda(
-                    doc.getObjectId("idTienda"),
+                    idAsString, // Pasar el id como String
                     doc.getString("nombre"),
                     doc.getString("ubicacionCoordenadas"),
                     doc.getString("telefono"),

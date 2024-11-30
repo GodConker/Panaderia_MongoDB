@@ -35,6 +35,8 @@ public class Entrega implements Serializable {
     // Constructores
     public Entrega() {
         this.productos = new ArrayList<>();
+        this.cantidades = new ArrayList<>();
+        this.precios = new ArrayList<>();
     }
 
     public Entrega(Date fechaEntrega, Tienda tienda, Empleado repartidor, List<Producto> productos, double montoTotal) {

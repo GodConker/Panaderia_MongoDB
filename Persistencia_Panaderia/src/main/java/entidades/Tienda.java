@@ -4,7 +4,6 @@
  */
 package entidades;
 
-import org.bson.types.ObjectId;
 
 import java.io.Serializable;
 
@@ -17,7 +16,7 @@ public class Tienda implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    private ObjectId id;
+    private String id;
 
     private String nombre;
     private String ubicacionCoordenadas;
@@ -29,7 +28,7 @@ public class Tienda implements Serializable {
     }
 
     // Constructor con parámetros
-    public Tienda(ObjectId id, String nombre, String ubicacionCoordenadas, String telefono, String direccion) {
+    public Tienda(String id, String nombre, String ubicacionCoordenadas, String telefono, String direccion) {
         this.id = id;
         this.nombre = nombre;
         this.ubicacionCoordenadas = ubicacionCoordenadas;
@@ -46,11 +45,11 @@ public class Tienda implements Serializable {
     }
 
     // Getters y Setters
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
     
@@ -59,7 +58,7 @@ public class Tienda implements Serializable {
     }
 
     public void setIdFromString(String id) {
-        this.id = (id != null) ? new ObjectId(id) : null;
+        this.id = (id != null) ? new String(id) : null;
     }
 
     public String getNombre() {

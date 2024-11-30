@@ -25,13 +25,13 @@ public class EntregaBO {
         this.inventarioDAO = inventarioDAO;
     }
 
-    public void registrarEntrega(EntregaDTO entregaDTO) throws BOException {
-        if (entregaDTO.getMontoTotal() <= 0) {
+    public void registrarEntrega(Entrega entregaEntidad) throws BOException {
+        if (entregaEntidad.getMontoTotal() <= 0) {
             throw new BOException("El monto total debe ser mayor a 0.");
         }
 
-        Entrega entrega = EntregaConvertidor.aEntidad(entregaDTO);
-        entregaDAO.guardarEntrega(entrega);
+        // Llamar al DAO para guardar la entrega
+        entregaDAO.guardarEntrega(entregaEntidad);
     }
 
     public int calcularPaquetesDisponibles(int cantidadDisponible) {

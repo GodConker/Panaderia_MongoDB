@@ -8,14 +8,18 @@ import business.objects.EmpleadoBO;
 import business.objects.EntregaBO;
 import business.objects.InventarioBO;
 import business.objects.TiendaBO;
+import convertidores.EmpleadoConvertidor;
 import daos.EmpleadoDAO;
 import daos.EntregaDAO;
 import daos.InventarioDAO;
 import daos.TiendaDAO;
 import dtos.EmpleadoDTO;
 import dtos.EntregaDTO;
+import dtos.ProductoDTO;
 import dtos.TiendaDTO;
 import entidades.Empleado;
+import entidades.Entrega;
+import entidades.Producto;
 import entidades.Tienda;
 import interfaces.IEmpleadoDAO;
 import interfaces.IEntregaDAO;
@@ -127,7 +131,6 @@ public class Control {
             if (tienda == null) {
                 return null;
             }
-
             // Si la tienda se encuentra, retornar su ID como String
             return tienda.getIdAsString(); // Asegúrate de que getIdAsString() devuelve el ID como String
         } catch (Exception e) {
@@ -138,9 +141,60 @@ public class Control {
 
     public void registrarEntrega(EntregaDTO entregaDTO) {
         try {
-            // Delegar el registro al BO
-            entregaBO.registrarEntrega(entregaDTO);
+            // Verificar que el DTO tenga asignado un repartidor
+            if (entregaDTO.getRepartidor() == null) {
+                throw new RuntimeException("Debe asignarse un repartidor a la entrega.");
+            }
+
+            // Convertir el EmpleadoDTO a la entidad Empleado
+            EmpleadoDTO repartidorDTO = entregaDTO.getRepartidor(); // Obtener el repartidor desde el DTO
+            Empleado repartidorEntidad = EmpleadoConvertidor.aEntidad(repartidorDTO); // Convertir a entidad
+
+            // Crear la entidad Entrega y asignar el repartidor
+            Entrega entregaEntidad = new Entrega();
+            entregaEntidad.setFechaEntrega(entregaDTO.getFechaEntrega());
+            entregaEntidad.setMontoTotal(entregaDTO.getMontoTotal());
+
+            // Convertir TiendaDTO a Tienda (si es necesario) y asignarla
+            Tienda tiendaEntidad = new Tienda();
+            tiendaEntidad.setIdFromString(entregaDTO.getIdTienda());  // Convertir ID de String a ObjectId si es necesario
+            entregaEntidad.setTienda(tiendaEntidad);
+
+            // Asignamos el repartidor a la entidad Entrega
+            entregaEntidad.setRepartidor(repartidorEntidad);  // Asignar el repartidor convertido
+
+            // Verificar si la lista de productos no está vacía
+            if (entregaDTO.getProductos() == null || entregaDTO.getProductos().isEmpty()) {
+                throw new RuntimeException("No hay productos en la entrega. Asegúrate de agregar productos.");
+            }
+
+            // Asignar los productos, cantidades y precios
+            List<Producto> productos = new ArrayList<>();
+            List<Integer> cantidades = new ArrayList<>();
+            List<Double> precios = new ArrayList<>();
+
+            for (ProductoDTO productoDTO : entregaDTO.getProductos()) {
+                Producto producto = new Producto();
+                producto.setNombre(productoDTO.getNombre());
+                producto.setPrecio(productoDTO.getPrecio());
+
+                // Asignar los productos a la entidad
+                productos.add(producto);
+                // Asignar cantidades y precios a sus respectivas listas
+                cantidades.add(productoDTO.getCantidad());
+                precios.add(productoDTO.getPrecio());
+            }
+
+            // Asignar las listas de productos, cantidades y precios a la entidad Entrega
+            entregaEntidad.setProductos(productos);
+            entregaEntidad.setCantidades(cantidades);
+            entregaEntidad.setPrecios(precios);
+
+            // Pasar la entidad a la capa de persistencia (DAO)
+            entregaBO.registrarEntrega(entregaEntidad); // Aquí es donde el negocio maneja la entidad
+
         } catch (Exception e) {
+            // Manejo de excepciones con mensaje detallado
             throw new RuntimeException("Error al registrar la entrega: " + e.getMessage(), e);
         }
     }

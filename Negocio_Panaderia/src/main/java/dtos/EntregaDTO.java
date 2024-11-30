@@ -94,6 +94,13 @@ public class EntregaDTO {
 
     @Override
     public String toString() {
-        return "EntregaDTO{" + "id=" + id + ", fechaEntrega=" + fechaEntrega + ", idTienda=" + idTienda + '}';
+        return "EntregaDTO{"
+                + "id='" + id + '\''
+                + ", fechaEntrega=" + fechaEntrega
+                + ", idTienda='" + idTienda + '\''
+                + ", productos=" + productos
+                + ", montoTotal=" + montoTotal
+                + ", repartidor=" + (repartidor != null ? repartidor.getNombre() : "No asignado")
+                + '}';
     }
 }
