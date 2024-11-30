@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import conexion.ConexionMongoDB;
 import entidades.Empleado;
 import entidades.Produccion;
 import interfaces.IProduccionDAO;
@@ -23,6 +24,12 @@ import org.bson.Document;
 public class ProduccionDAO implements IProduccionDAO {
 
     private final MongoCollection<Document> coleccion;
+    
+    public ProduccionDAO(){
+        // Usamos la conexión singleton para obtener la base de datos
+        MongoDatabase baseDatos = ConexionMongoDB.getDatabase();  // Obtenemos la base de datos
+        this.coleccion = baseDatos.getCollection("produccion");  // Obtener la colección "empleado"
+    }
 
     public ProduccionDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección de producciones dentro de la base de datos

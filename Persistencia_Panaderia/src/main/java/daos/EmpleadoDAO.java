@@ -10,6 +10,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import conexion.ConexionMongoDB;
 import entidades.Empleado;
 import interfaces.IEmpleadoDAO;
 import org.bson.Document;
@@ -27,10 +28,9 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     private final MongoCollection<Document> coleccion;
 
     public EmpleadoDAO() {
-        // Establecer la conexión directamente dentro del constructor con la nueva forma de crear MongoClient
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");  // Usando MongoClients.create()
-        MongoDatabase baseDatos = mongoClient.getDatabase("panaderia"); // Nombre de la base de datos
-        this.coleccion = baseDatos.getCollection("empleado"); // Obtener la colección "empleados"
+        // Usamos la conexión singleton para obtener la base de datos
+        MongoDatabase baseDatos = ConexionMongoDB.getDatabase();  // Obtenemos la base de datos
+        this.coleccion = baseDatos.getCollection("empleado");  // Obtener la colección "empleado"
     }
 
     // Constructor con base de datos ya establecida

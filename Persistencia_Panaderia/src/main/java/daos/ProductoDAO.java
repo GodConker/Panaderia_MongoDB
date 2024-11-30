@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import conexion.ConexionMongoDB;
 import entidades.Producto;
 import interfaces.IProductoDAO;
 import java.util.ArrayList;
@@ -21,6 +22,12 @@ import org.bson.Document;
 public class ProductoDAO implements IProductoDAO {
 
     private final MongoCollection<Document> coleccion;
+    
+    public ProductoDAO(){
+        // Usamos la conexión singleton para obtener la base de datos
+        MongoDatabase baseDatos = ConexionMongoDB.getDatabase();  // Obtenemos la base de datos
+        this.coleccion = baseDatos.getCollection("producto");  // Obtener la colección "empleado"
+    }
 
     public ProductoDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección de productos dentro de la base de datos

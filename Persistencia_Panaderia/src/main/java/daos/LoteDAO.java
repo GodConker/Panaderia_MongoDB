@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import conexion.ConexionMongoDB;
 import entidades.Lote;
 import entidades.Producto;
 import interfaces.ILoteDAO;
@@ -24,6 +25,12 @@ import org.bson.types.ObjectId;
 public class LoteDAO implements ILoteDAO {
 
     private final MongoCollection<Document> coleccion;
+    
+    public LoteDAO(){
+        // Usamos la conexión singleton para obtener la base de datos
+        MongoDatabase baseDatos = ConexionMongoDB.getDatabase();  // Obtenemos la base de datos
+        this.coleccion = baseDatos.getCollection("lote");  // Obtener la colección "empleado"
+    }
 
     public LoteDAO(MongoDatabase baseDatos) {
         // Conectamos a la colección de lotes dentro de la base de datos
