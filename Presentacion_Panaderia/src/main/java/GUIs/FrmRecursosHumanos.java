@@ -6,47 +6,82 @@ package GUIs;
 import control.Control;
 import dtos.EmpleadoDTO;
 import java.util.List;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
  * @author Dell
  */
 public class FrmRecursosHumanos extends javax.swing.JFrame {
-    
+
     // Declarar el Control
     private Control control;
-    
+
     /**
      * Creates new form FrmRecursosHumanos
      */
     public FrmRecursosHumanos() {
         initComponents();
+        setLocationRelativeTo(null);
         control = new Control();
         llenarTablaEmpleados();
+        agregarListenerSeleccionFila();
     }
-    
+
     private void llenarTablaEmpleados() {
         // Obtener la lista de empleados
         List<EmpleadoDTO> listaEmpleados = control.obtenerRepartidores();
-        
+
         // Obtener el modelo de la tabla
         DefaultTableModel model = (DefaultTableModel) TableEmpleados.getModel();
-        
+
         // Limpiar la tabla
         model.setRowCount(0);
-        
+
         // Llenar la tabla con los datos de los empleados
         for (EmpleadoDTO empleado : listaEmpleados) {
             Object[] fila = new Object[3];
             fila[0] = empleado.getNombre();
             fila[1] = empleado.getCargo();
             fila[2] = empleado.getSalario();
-            
+
             // Añadir la fila al modelo
             model.addRow(fila);
         }
+
+        // Configurar la tabla para que no sea editable
+        TableEmpleados.setDefaultEditor(Object.class, null); // Deshabilitar edición
     }
 
+    private void agregarListenerSeleccionFila() {
+        // Agregar un listener para la selección de filas
+        TableEmpleados.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                // Verificar que no se haya deseleccionado la fila
+                if (!e.getValueIsAdjusting()) {
+                    int row = TableEmpleados.getSelectedRow();
+
+                    // Si hay una fila seleccionada
+                    if (row >= 0) {
+                        // Obtener el modelo de la tabla
+                        DefaultTableModel model = (DefaultTableModel) TableEmpleados.getModel();
+
+                        // Obtener los datos de la fila seleccionada
+                        String nombre = model.getValueAt(row, 0).toString();
+                        String cargo = model.getValueAt(row, 1).toString();
+                        String salario = model.getValueAt(row, 2).toString();
+
+                        // Establecer los valores en los JTextField y JComboBox
+                        TxtfNombreEmpleado.setText(nombre);
+                        CBXCargoEmpleado.setSelectedItem(cargo);  // Suponiendo que CBXCargoEmpleado es un JComboBox
+                        TxtfSalarioEmpleado.setText(salario);
+                    }
+                }
+            }
+        });
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
