@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package GUIs;
-
+ 
 import control.Control;
 import dtos.EmpleadoDTO;
 import java.text.DecimalFormat;
@@ -29,6 +29,9 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
         llenarTablaEmpleados();
         agregarListenerSeleccionFila();
         configurarComboBoxCargo();
+
+        // Inicializar el botón como "Agregar"
+        BtnAgregarActualizarEmpleado.setText("Agregar");
     }
 
     private void llenarTablaEmpleados() {
@@ -79,6 +82,9 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
                         TxtfNombreEmpleado.setText(nombre);
                         CBXCargoEmpleado.setSelectedItem(cargo);  // Suponiendo que CBXCargoEmpleado es un JComboBox
                         TxtfSalarioEmpleado.setText(salario);
+
+                        // Cambiar el texto del botón a "Actualizar"
+                        BtnAgregarActualizarEmpleado.setText("Actualizar");
                     }
                 }
             }
@@ -87,7 +93,6 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
 
     // Configurar el JComboBox de Cargos
     private void configurarComboBoxCargo() {
-
         // Deshabilitar la edición del JTextField de salario
         TxtfSalarioEmpleado.setEditable(false);
 
@@ -99,7 +104,7 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
     private void actualizarSalarioPorCargo() {
         // Obtener el cargo seleccionado
         String cargo = (String) CBXCargoEmpleado.getSelectedItem();
-        
+
         // Establecer el salario dependiendo del cargo con formato decimal
         DecimalFormat df = new DecimalFormat("#.00");  // Formato para 2 decimales
         switch (cargo) {
@@ -117,7 +122,6 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
                 break;
         }
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -316,7 +320,48 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnAgregarActualizarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAgregarActualizarEmpleadoActionPerformed
-        // TODO add your handling code here:
+ // Obtener el texto actual del botón
+    String accion = BtnAgregarActualizarEmpleado.getText();
+
+    // Validar que los campos obligatorios estén llenos solo si la acción es "Agregar"
+    if (accion.equals("Agregar") && (TxtfNombreEmpleado.getText().trim().isEmpty() || CBXCargoEmpleado.getSelectedIndex() == 0)) {
+        javax.swing.JOptionPane.showMessageDialog(
+            this,
+            "Por favor, complete todos los campos obligatorios antes de continuar.",
+            "Campos incompletos",
+            javax.swing.JOptionPane.WARNING_MESSAGE
+        );
+        return; // Salir del método si los campos no están completos
+    }
+
+    // Mostrar un mensaje de confirmación según la acción
+    int opcion = javax.swing.JOptionPane.showConfirmDialog(
+        this,
+        "¿Está seguro de " + (accion.equals("Agregar") ? "agregar" : "actualizar") + " este empleado?",
+        "Confirmación",
+        javax.swing.JOptionPane.YES_NO_OPTION
+    );
+
+    if (opcion == javax.swing.JOptionPane.YES_OPTION) {
+        // Mostrar mensaje de éxito
+        javax.swing.JOptionPane.showMessageDialog(
+            this,
+            "Empleado " + (accion.equals("Agregar") ? "agregado" : "actualizado") + " exitosamente.",
+            "Éxito",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE
+        );
+
+        // Redirigir al formulario FrmMenu
+        FrmMenu menu = new FrmMenu(); // Crear instancia de FrmMenu
+        menu.setVisible(true);        // Mostrar el formulario del menú
+        this.dispose();               // Cerrar el formulario actual
+    } else {
+        // Limpiar los campos de texto y restablecer el botón a "Agregar"
+        TxtfNombreEmpleado.setText("");
+        CBXCargoEmpleado.setSelectedIndex(0);
+        TxtfSalarioEmpleado.setText("0.00");
+        BtnAgregarActualizarEmpleado.setText("Agregar");
+    }
     }//GEN-LAST:event_BtnAgregarActualizarEmpleadoActionPerformed
 
     private void BtnRegresarMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRegresarMenuActionPerformed
