@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package GUIs;
- 
+
 import control.Control;
 import dtos.EmpleadoDTO;
 import java.text.DecimalFormat;
@@ -320,48 +320,48 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnAgregarActualizarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAgregarActualizarEmpleadoActionPerformed
- // Obtener el texto actual del botón
-    String accion = BtnAgregarActualizarEmpleado.getText();
+        // Obtener el texto actual del botón
+        String accion = BtnAgregarActualizarEmpleado.getText();
 
-    // Validar que los campos obligatorios estén llenos solo si la acción es "Agregar"
-    if (accion.equals("Agregar") && (TxtfNombreEmpleado.getText().trim().isEmpty() || CBXCargoEmpleado.getSelectedIndex() == 0)) {
-        javax.swing.JOptionPane.showMessageDialog(
-            this,
-            "Por favor, complete todos los campos obligatorios antes de continuar.",
-            "Campos incompletos",
-            javax.swing.JOptionPane.WARNING_MESSAGE
-        );
-        return; // Salir del método si los campos no están completos
-    }
+        // Validar que los campos obligatorios estén llenos solo si la acción es "Agregar"
+        if (accion.equals("Agregar") && (TxtfNombreEmpleado.getText().trim().isEmpty() || CBXCargoEmpleado.getSelectedIndex() == 0)) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Por favor, complete todos los campos obligatorios antes de continuar.",
+                    "Campos incompletos",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+            );
+            return; // Salir del método si los campos no están completos
+        }
 
-    // Mostrar un mensaje de confirmación según la acción
-    int opcion = javax.swing.JOptionPane.showConfirmDialog(
-        this,
-        "¿Está seguro de " + (accion.equals("Agregar") ? "agregar" : "actualizar") + " este empleado?",
-        "Confirmación",
-        javax.swing.JOptionPane.YES_NO_OPTION
-    );
-
-    if (opcion == javax.swing.JOptionPane.YES_OPTION) {
-        // Mostrar mensaje de éxito
-        javax.swing.JOptionPane.showMessageDialog(
-            this,
-            "Empleado " + (accion.equals("Agregar") ? "agregado" : "actualizado") + " exitosamente.",
-            "Éxito",
-            javax.swing.JOptionPane.INFORMATION_MESSAGE
+        // Mostrar un mensaje de confirmación según la acción
+        int opcion = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                "¿Está seguro de " + (accion.equals("Agregar") ? "agregar" : "actualizar") + " este empleado?",
+                "Confirmación",
+                javax.swing.JOptionPane.YES_NO_OPTION
         );
 
-        // Redirigir al formulario FrmMenu
-        FrmMenu menu = new FrmMenu(); // Crear instancia de FrmMenu
-        menu.setVisible(true);        // Mostrar el formulario del menú
-        this.dispose();               // Cerrar el formulario actual
-    } else {
-        // Limpiar los campos de texto y restablecer el botón a "Agregar"
-        TxtfNombreEmpleado.setText("");
-        CBXCargoEmpleado.setSelectedIndex(0);
-        TxtfSalarioEmpleado.setText("0.00");
-        BtnAgregarActualizarEmpleado.setText("Agregar");
-    }
+        if (opcion == javax.swing.JOptionPane.YES_OPTION) {
+            // Mostrar mensaje de éxito
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Empleado " + (accion.equals("Agregar") ? "agregado" : "actualizado") + " exitosamente.",
+                    "Éxito",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE
+            );
+
+            // Redirigir al formulario FrmMenu
+            FrmMenu menu = new FrmMenu(); // Crear instancia de FrmMenu
+            menu.setVisible(true);        // Mostrar el formulario del menú
+            this.dispose();               // Cerrar el formulario actual
+        } else {
+            // Limpiar los campos de texto y restablecer el botón a "Agregar"
+            TxtfNombreEmpleado.setText("");
+            CBXCargoEmpleado.setSelectedIndex(0);
+            TxtfSalarioEmpleado.setText("0.00");
+            BtnAgregarActualizarEmpleado.setText("Agregar");
+        }
     }//GEN-LAST:event_BtnAgregarActualizarEmpleadoActionPerformed
 
     private void BtnRegresarMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRegresarMenuActionPerformed
@@ -386,7 +386,67 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
     }//GEN-LAST:event_CBXCargoEmpleadoActionPerformed
 
     private void BtnEliminarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnEliminarEmpleadoActionPerformed
-        // TODO add your handling code here:
+    // Verificar si los campos están llenos (empleado nuevo)
+    boolean camposLlenos = !TxtfNombreEmpleado.getText().trim().isEmpty() && CBXCargoEmpleado.getSelectedIndex() != 0;
+
+    // Verificar si hay un empleado seleccionado en la tabla
+    boolean empleadoSeleccionado = TableEmpleados.getSelectedRow() != -1; // Reemplaza "tablaEmpleados" por el nombre de tu tabla
+
+    if (camposLlenos && !empleadoSeleccionado) {
+        // Caso 1: Campos llenos (empleado nuevo) y no hay selección en la tabla
+        int opcion = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "¿Está seguro de querer limpiar los campos?",
+            "Confirmación de limpieza",
+            javax.swing.JOptionPane.YES_NO_OPTION
+        );
+
+        if (opcion == javax.swing.JOptionPane.YES_OPTION) {
+            // Limpiar los campos
+            TxtfNombreEmpleado.setText("");
+            CBXCargoEmpleado.setSelectedIndex(0);
+            TxtfSalarioEmpleado.setText("0.00");
+
+            javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Los campos se han limpiado exitosamente.",
+                "Campos limpiados",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE
+            );
+        }
+
+    } else if (empleadoSeleccionado) {
+        // Caso 2: Se seleccionó un empleado de la tabla
+        int opcion = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "¿Está seguro de querer eliminar al empleado seleccionado?",
+            "Confirmación de eliminación",
+            javax.swing.JOptionPane.YES_NO_OPTION
+        );
+
+        if (opcion == javax.swing.JOptionPane.YES_OPTION) {
+            // Aquí puedes implementar la lógica para eliminar al empleado de la base de datos o tabla
+            javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Empleado eliminado exitosamente.",
+                "Éxito",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE
+            );
+
+            // Limpiar los campos después de la eliminación
+            TxtfNombreEmpleado.setText("");
+            CBXCargoEmpleado.setSelectedIndex(0);
+            TxtfSalarioEmpleado.setText("0.00");
+        }
+    } else {
+        // Si no hay campos llenos ni empleado seleccionado
+        javax.swing.JOptionPane.showMessageDialog(
+            this,
+            "No hay información para eliminar.",
+            "Aviso",
+            javax.swing.JOptionPane.WARNING_MESSAGE
+        );
+    }
     }//GEN-LAST:event_BtnEliminarEmpleadoActionPerformed
 
     /**
