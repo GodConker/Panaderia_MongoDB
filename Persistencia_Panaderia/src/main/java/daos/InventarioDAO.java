@@ -4,6 +4,8 @@
  */
 package daos;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -14,6 +16,7 @@ import interfaces.IInventarioDAO;
 import java.util.ArrayList;
 import java.util.List;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -22,10 +25,24 @@ import org.bson.Document;
 public class InventarioDAO implements IInventarioDAO {
 
     private final MongoCollection<Document> coleccion;
+    private final MongoCollection<Document> coleccionProducto;
+    private final MongoCollection<Document> coleccionInventario;
 
     public InventarioDAO(MongoDatabase baseDatos) {
-        // Conectamos a la colección de inventarios dentro de la base de datos
         this.coleccion = baseDatos.getCollection("inventario");
+        this.coleccionProducto = baseDatos.getCollection("producto");
+        this.coleccionInventario = baseDatos.getCollection("inventario");
+    }
+
+    public InventarioDAO() {
+        // Establecer la conexión directamente dentro del constructor con la nueva forma de crear MongoClient
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");  // Usando MongoClients.create()
+        MongoDatabase baseDatos = mongoClient.getDatabase("panaderia"); // Nombre de la base de datos
+
+        // Inicialización de las colecciones
+        this.coleccion = baseDatos.getCollection("inventario"); // Obtener la colección "inventario"
+        this.coleccionProducto = baseDatos.getCollection("producto"); // Obtener la colección "producto"
+        this.coleccionInventario = baseDatos.getCollection("inventario"); // Obtener la colección "inventario" (ya está definida)
     }
 
     // Método auxiliar para convertir un Document a Inventario
@@ -34,16 +51,16 @@ public class InventarioDAO implements IInventarioDAO {
         producto.setId(doc.getObjectId("idProducto")); // Suponiendo que "idProducto" es un campo en MongoDB
 
         return new Inventario(
-            doc.getObjectId("idInventario"),
-            producto, // Asumimos que Producto se maneja por su ID en el Inventario
-            doc.getInteger("cantidad")
+                doc.getObjectId("idInventario"),
+                producto, // Asumimos que Producto se maneja por su ID en el Inventario
+                doc.getInteger("cantidad")
         );
     }
 
     // Método auxiliar para convertir Inventario a Document
     private Document convertirAInventarioADocumento(Inventario inventario) {
         return new Document("idInventario", inventario.getId())
-                .append("idProducto", inventario.getProducto().getId())  // Se usa el ID del producto
+                .append("idProducto", inventario.getProducto().getId()) // Se usa el ID del producto
                 .append("cantidad", inventario.getCantidadDisponible());
     }
 
@@ -113,4 +130,21 @@ public class InventarioDAO implements IInventarioDAO {
         }
         return inventarios;
     }
+
+    @Override
+    public int obtenerCantidadPorProducto(String nombreProducto) {
+        try {
+            // Busca el inventario relacionado al producto por su nombre en el subdocumento "producto"
+            Document inventario = coleccionInventario.find(Filters.eq("producto.nombre", nombreProducto)).first();
+            if (inventario == null) {
+                return 0; // Sin registro de inventario
+            }
+
+            // Retorna la cantidad disponible
+            return inventario.getInteger("cantidadDisponible", 0);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al consultar el inventario para el producto: " + nombreProducto, e);
+        }
+    }
+
 }

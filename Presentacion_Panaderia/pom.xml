@@ -5,6 +5,8 @@
     <artifactId>Presentacion_Panaderia</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
+    <!-- Dependencias -->
     <dependencies>
         <dependency>
             <groupId>org.netbeans.external</groupId>
@@ -23,10 +25,46 @@
             <version>11.2.1</version>
         </dependency>
     </dependencies>
+
+    <!-- Configuración de compilación -->
+    <build>
+        <plugins>
+            <!-- Plugin para compilar con Java 21 y habilitar características de vista previa -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <release>22</release> <!-- Cambia de 21 a 22 -->
+                    <compilerArgs>
+                        <arg>--enable-preview</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin para ejecutar con Java 21 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <mainClass>${exec.mainClass}</mainClass>
+                    <arguments>
+                        <argument>--enable-preview</argument> <!-- Usar <arguments> en vez de <commandlineArgs> -->
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Propiedades -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
+        <exec.mainClass>principal.Presentacion_Panaderia</exec.mainClass>
     </properties>
+
+    <!-- Información del proyecto -->
     <name>Presentacion_Panaderia</name>
 </project>

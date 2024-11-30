@@ -8,26 +8,34 @@ import entidades.Empleado;
 import java.util.List;
 
 /**
- *
- * @author danie
+ * Interfaz para operaciones de persistencia sobre la entidad Empleado.
  */
 public interface IEmpleadoDAO {
 
-    List<Empleado> obtenerTodosEmpleados();
+    // Obtener una lista de repartidores
+    List<Empleado> obtenerRepartidores() throws Exception;
 
-    Empleado obtenerEmpleadoPorID(int id);
+    // Obtener un repartidor por ID
+    Empleado obtenerRepartidorPorId(String id) throws Exception;
 
+    // Agregar un nuevo empleado
     boolean agregarEmpleado(Empleado empleado);
 
+    // Buscar un empleado por su nombre
+    Empleado buscarPorNombre(String nombre) throws Exception;
+
+    // Buscar empleados por nombre
+    List<Empleado> buscarEmpleadosPorNombre(String nombre) throws Exception;
+
+    // Eliminar un empleado por ID
+    boolean eliminarEmpleado(String id);
+
+    // Actualizar los datos de un empleado
     boolean actualizarEmpleado(Empleado empleado);
 
-    boolean eliminarEmpleado(int id);
+    // Obtener un empleado por su ID
+    Empleado obtenerEmpleadoPorID(String id);
 
-    List<Empleado> buscarEmpleadosPorNombre(String nombre);
-    
-    Empleado buscarPorId(String idRepartidor);
-    
-    List<Empleado> obtenerRepartidores();
-    
-    Empleado obtenerRepartidorPorId(String id) throws Exception; // Retorna una entidad 
+    // Obtener todos los empleados
+    List<Empleado> obtenerTodosEmpleados();
 }

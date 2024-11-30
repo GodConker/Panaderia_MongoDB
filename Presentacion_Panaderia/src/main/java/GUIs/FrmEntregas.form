@@ -120,10 +120,10 @@
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="115" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="CBXTiendas" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel11" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="jLabel11" alignment="1" max="32767" attributes="0"/>
                               <Component id="jLabel13" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="CBXTiendas" alignment="1" max="32767" attributes="0"/>
                           </Group>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
@@ -375,13 +375,7 @@
         <Component class="javax.swing.JComboBox" name="CBXTiendas">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="5">
-                <StringItem index="0" value="Abarrotes &quot;Lety&quot;"/>
-                <StringItem index="1" value="Tiendita &quot;Las Haciendas&quot;"/>
-                <StringItem index="2" value="Miscelanea &quot;Del Pueblo&quot;"/>
-                <StringItem index="3" value="Tiendita &quot;Seguro Social&quot;"/>
-                <StringItem index="4" value="Abarrotes &quot;Surtido Rico&quot;"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
           </Properties>
           <Events>

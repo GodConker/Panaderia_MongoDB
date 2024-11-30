@@ -4,13 +4,14 @@ import control.Control;
 import dtos.EmpleadoDTO;
 import dtos.EntregaDTO;
 import dtos.ProductoDTO;
+import dtos.TiendaDTO;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 
 public class FrmEntregas extends javax.swing.JFrame {
 
-    private Control control;
+    private final Control control;
 
     // Variables para los precios de los productos
     private final double precioDonas = 60.00;
@@ -23,6 +24,9 @@ public class FrmEntregas extends javax.swing.JFrame {
         TxtfMontoTotal.setEditable(false); // Asegurarse de que el campo sea solo lectura
         control = new Control();  // Correctamente inicializada
         cargarRepartidores();
+        cargarTiendas();
+//        actualizarComboBoxDonas();
+//        inicializarComboBoxCantidadPaquetes();
     }
 
     private void cargarRepartidores() {
@@ -35,6 +39,92 @@ public class FrmEntregas extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar los repartidores: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void cargarTiendas() {
+        try {
+            CBXTiendas.removeAllItems(); // Limpia el ComboBox
+            List<TiendaDTO> tiendas = control.obtenerTiendas(); // Obtén la lista de tiendas desde la capa de control
+            for (TiendaDTO tienda : tiendas) {
+                CBXTiendas.addItem(tienda.getNombre()); // Agrega los nombres de las tiendas al ComboBox
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar las tiendas: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+//    private void inicializarComboBoxCantidadPaquetes() {
+//        try {
+//            String producto = "Donas"; // Producto a manejar
+//            int cantidadDisponible = control.obtenerCantidadDisponiblePorProducto(producto);
+//
+//            // Determina el límite máximo entre la cantidad disponible y 10
+//            int limite = Math.min(cantidadDisponible, 10);
+//
+//            // Limpia el comboBox
+//            CBXCantidadPaqueteDonas.removeAllItems();
+//
+//            // Llena el comboBox con valores desde 1 hasta el límite
+//            for (int i = 1; i <= limite; i++) {
+//                CBXCantidadPaqueteDonas.addItem(String.valueOf(i));
+//            }
+//
+//            // Selecciona el primer elemento si hay datos
+//            if (CBXCantidadPaqueteDonas.getItemCount() > 0) {
+//                CBXCantidadPaqueteDonas.setSelectedIndex(0);
+//                System.out.println("Primer elemento seleccionado: " + CBXCantidadPaqueteDonas.getSelectedItem());
+//            } else {
+//                System.out.println("El comboBox quedó vacío.");
+//            }
+//        } catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, "Error al inicializar el comboBox: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
+//
+//    private void actualizarComboBoxDonas() {
+//        try {
+//            int donasDisponibles = control.obtenerCantidadDisponiblePorProducto("Donas");
+//
+//            if (donasDisponibles <= 0) {
+//                CBXCantidadPaqueteDonas.removeAllItems();
+//                CBXCantidadPaqueteDonas.addItem("Sin stock");
+//                CBXCantidadPaqueteDonas.setSelectedIndex(0);
+//                return;
+//            }
+//
+//            int paquetesDisponibles = donasDisponibles / 6;
+//            int maxPaquetes = Math.min(paquetesDisponibles, 10);
+//
+//            CBXCantidadPaqueteDonas.removeAllItems();
+//            for (int i = 1; i <= maxPaquetes; i++) {
+//                CBXCantidadPaqueteDonas.addItem(String.valueOf(i));
+//            }
+//
+//            if (CBXCantidadPaqueteDonas.getItemCount() > 0) {
+//                CBXCantidadPaqueteDonas.setSelectedIndex(0);
+//            }
+//
+//            System.out.println("ComboBox actualizado con " + maxPaquetes + " opciones.");
+//            System.out.println("Elemento seleccionado: " + CBXCantidadPaqueteDonas.getSelectedItem());
+//        } catch (Exception e) {
+//            JOptionPane.showMessageDialog(this,
+//                    "Error al actualizar las opciones de paquetes de donas: " + e.getMessage(),
+//                    "Error",
+//                    JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
+
+    private void registrarEntrega() {
+        try {
+            // Obtener la cantidad seleccionada
+            int cantidadSeleccionada = (int) CBXCantidadPaqueteDonas.getSelectedItem();
+
+            // Aquí puedes usar este valor para realizar la entrega
+            System.out.println("Cantidad seleccionada: " + cantidadSeleccionada);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al registrar la entrega: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -129,7 +219,6 @@ public class FrmEntregas extends javax.swing.JFrame {
         jLabel11.setForeground(new java.awt.Color(255, 255, 0));
         jLabel11.setText("Seleccione tienda a surtir:");
 
-        CBXTiendas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Abarrotes \"Lety\"", "Tiendita \"Las Haciendas\"", "Miscelanea \"Del Pueblo\"", "Tiendita \"Seguro Social\"", "Abarrotes \"Surtido Rico\"" }));
         CBXTiendas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CBXTiendasActionPerformed(evt);
@@ -215,10 +304,10 @@ public class FrmEntregas extends javax.swing.JFrame {
                             .addComponent(BtnConfirmarEntrega, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(115, 115, 115)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(CBXTiendas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel13))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel13)
+                            .addComponent(CBXTiendas, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(32, 32, 32)

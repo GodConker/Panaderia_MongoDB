@@ -24,4 +24,8 @@ public interface ITiendaDAO {
     boolean eliminarTienda(int id);
 
     List<Tienda> buscarTiendasPorNombre(String nombre);
+    
+    int obtenerCantidadDisponibleProducto(String nombreProducto);
+    
+    void actualizarCantidadInventario(String nombreProducto, int cantidadCambio); 
 }

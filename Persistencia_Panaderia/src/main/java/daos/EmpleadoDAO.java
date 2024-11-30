@@ -19,51 +19,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase DAO para manejar las operaciones CRUD de la entidad 'Empleado' con
- * MongoDB.
+ * Clase DAO para manejar las operaciones CRUD de la entidad 'Empleado' con MongoDB.
  */
 public class EmpleadoDAO implements IEmpleadoDAO {
 
     private final MongoCollection<Document> coleccion;
 
     public EmpleadoDAO() {
-        // Establecer la conexión directamente dentro del constructor con la nueva forma de crear MongoClient
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");  // Usando MongoClients.create()
-        MongoDatabase baseDatos = mongoClient.getDatabase("panaderia"); // Nombre de la base de datos
-        this.coleccion = baseDatos.getCollection("empleado"); // Obtener la colección "empleados"
-    }
-
-    // Constructor con base de datos ya establecida
-    public EmpleadoDAO(MongoDatabase baseDatos) {
+        // Conexión a MongoDB
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase baseDatos = mongoClient.getDatabase("panaderia");
         this.coleccion = baseDatos.getCollection("empleado");
     }
 
     // Método auxiliar para convertir un Document a Empleado
-    private Empleado convertirADocumentoAEmpleado(Document doc) {
-    Object salarioObj = doc.get("salario");
-    Double salario = null;
-
-        switch (salarioObj) {
-            case Integer integer -> salario = integer.doubleValue();  // Convertir Integer a Double
-            case Double aDouble -> salario = aDouble;  // Ya es un Double
-            default -> {
-            }
+    private Empleado convertirDocumentoAEmpleado(Document doc) {
+        if (doc == null) {
+            return null;
         }
 
-    return new Empleado(
-            doc.getObjectId("_id"), // ID de empleado
-            doc.getString("nombre"), // Nombre del empleado
-            doc.getString("puesto"), // Puesto del empleado
-            salario // Salario del empleado
-    );
-}
+        Object salarioObj = doc.get("salario");
+        Double salario = null;
+
+        if (salarioObj instanceof Integer) {
+            salario = ((Integer) salarioObj).doubleValue();
+        } else if (salarioObj instanceof Double) {
+            salario = (Double) salarioObj;
+        }
+
+        return new Empleado(
+                doc.getObjectId("_id"),
+                doc.getString("nombre"),
+                doc.getString("puesto"),
+                salario
+        );
+    }
 
     // Método auxiliar para convertir Empleado a Document
-    private Document convertirAEmpleadoADocumento(Empleado empleado) {
-        return new Document("_id", empleado.getId())
+    private Document convertirEmpleadoADocumento(Empleado empleado) {
+        Document documento = new Document("_id", empleado.getId())
                 .append("nombre", empleado.getNombre())
                 .append("puesto", empleado.getCargo())
                 .append("salario", empleado.getSalario());
+        return documento;
     }
 
     @Override
@@ -71,24 +69,30 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         List<Empleado> empleados = new ArrayList<>();
         try (MongoCursor<Document> cursor = coleccion.find().iterator()) {
             while (cursor.hasNext()) {
-                Document doc = cursor.next();
-                empleados.add(convertirADocumentoAEmpleado(doc));
+                empleados.add(convertirDocumentoAEmpleado(cursor.next()));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return empleados;
     }
 
     @Override
-    public Empleado obtenerEmpleadoPorID(int id) {
-        Document doc = coleccion.find(Filters.eq("_id", new ObjectId(id + ""))).first();
-        return (doc != null) ? convertirADocumentoAEmpleado(doc) : null;
+    public Empleado obtenerEmpleadoPorID(String id) {
+        try {
+            ObjectId objectId = new ObjectId(id);
+            Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
+            return convertirDocumentoAEmpleado(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public boolean agregarEmpleado(Empleado empleado) {
         try {
-            Document doc = convertirAEmpleadoADocumento(empleado);
-            coleccion.insertOne(doc);
+            coleccion.insertOne(convertirEmpleadoADocumento(empleado));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,9 +104,7 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     public boolean actualizarEmpleado(Empleado empleado) {
         try {
             Document filtro = new Document("_id", empleado.getId());
-            Document actualizacion = new Document("$set", new Document("nombre", empleado.getNombre())
-                    .append("puesto", empleado.getCargo())
-                    .append("salario", empleado.getSalario()));
+            Document actualizacion = new Document("$set", convertirEmpleadoADocumento(empleado));
             coleccion.updateOne(filtro, actualizacion);
             return true;
         } catch (Exception e) {
@@ -112,10 +114,10 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     }
 
     @Override
-    public boolean eliminarEmpleado(int id) {
+    public boolean eliminarEmpleado(String id) {
         try {
-            Document filtro = new Document("_id", new ObjectId(id + ""));
-            coleccion.deleteOne(filtro);
+            ObjectId objectId = new ObjectId(id);
+            coleccion.deleteOne(Filters.eq("_id", objectId));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,28 +130,12 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         List<Empleado> empleados = new ArrayList<>();
         try (MongoCursor<Document> cursor = coleccion.find(Filters.eq("nombre", nombre)).iterator()) {
             while (cursor.hasNext()) {
-                Document doc = cursor.next();
-                empleados.add(convertirADocumentoAEmpleado(doc));
+                empleados.add(convertirDocumentoAEmpleado(cursor.next()));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return empleados;
-    }
-
-    @Override
-    public Empleado buscarPorId(String idRepartidor) {
-        // Convertimos la cadena 'idRepartidor' a ObjectId, ya que MongoDB usa ObjectId como identificador
-        ObjectId objectId = new ObjectId(idRepartidor);
-
-        // Buscar el empleado por su ObjectId
-        Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
-
-        // Si encontramos el documento, lo convertimos a Empleado
-        if (doc != null) {
-            return convertirADocumentoAEmpleado(doc);
-        } else {
-            // Si no se encuentra el empleado, retornamos null
-            return null;
-        }
     }
 
     @Override
@@ -157,26 +143,31 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         List<Empleado> repartidores = new ArrayList<>();
         try (MongoCursor<Document> cursor = coleccion.find(Filters.eq("puesto", "Repartidor")).iterator()) {
             while (cursor.hasNext()) {
-                Document doc = cursor.next();
-                Empleado empleado = convertirADocumentoAEmpleado(doc);
-                repartidores.add(empleado); // Añadir al listado
+                repartidores.add(convertirDocumentoAEmpleado(cursor.next()));
             }
         } catch (Exception e) {
-            System.err.println("Error al obtener repartidores: " + e.getMessage());
             e.printStackTrace();
         }
         return repartidores;
     }
 
+    public Empleado buscarPorId(String idRepartidor) {
+        return obtenerEmpleadoPorID(idRepartidor);
+    }
+
     @Override
-    public Empleado obtenerRepartidorPorId(String id) throws Exception {
+    public Empleado obtenerRepartidorPorId(String id) {
+        return obtenerEmpleadoPorID(id);
+    }
+
+    @Override
+    public Empleado buscarPorNombre(String nombre) {
         try {
-            ObjectId objectId = new ObjectId(id); // Convertir el ID a ObjectId
-            Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
-            return (doc != null) ? convertirADocumentoAEmpleado(doc) : null; // Convertir o retornar null si no se encuentra
+            Document doc = coleccion.find(Filters.eq("nombre", nombre)).first();
+            return convertirDocumentoAEmpleado(doc);
         } catch (Exception e) {
-            System.err.println("Error al obtener repartidor por ID: " + e.getMessage());
-            throw e; // Lanzamos la excepción para que la maneje la capa superior
+            e.printStackTrace();
+            return null;
         }
     }
 }
