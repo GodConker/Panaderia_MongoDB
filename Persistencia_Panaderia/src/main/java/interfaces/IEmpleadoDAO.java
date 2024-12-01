@@ -6,6 +6,7 @@ package interfaces;
 
 import entidades.Empleado;
 import java.util.List;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -26,10 +27,10 @@ public interface IEmpleadoDAO {
     List<Empleado> buscarEmpleadosPorNombre(String nombre);
     
     Empleado buscarPorId(String idRepartidor);
-    
-    List<Empleado> obtenerRepartidores();
-    
-    Empleado obtenerRepartidorPorId(String id) throws Exception;
-    
+            
     Empleado buscarPorId(int idEmpleado);
+
+    List<Empleado> obtenerEmpleados();
+
+    Empleado obtenerEmpleadoPorId(ObjectId objectId);
 }

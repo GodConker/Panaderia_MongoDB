@@ -10,6 +10,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import dtos.EmpleadoDTO;
 import entidades.Empleado;
 import interfaces.IEmpleadoDAO;
 import org.bson.Document;
@@ -43,13 +44,11 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         Object salarioObj = doc.get("salario");
         Double salario = null;
 
-        switch (salarioObj) {
-            case Integer integer ->
-                salario = integer.doubleValue();  // Convertir Integer a Double
-            case Double aDouble ->
-                salario = aDouble;  // Ya es un Double
-            default -> {
-            }
+        // Verificar el tipo de dato y convertirlo a Double si es necesario
+        if (salarioObj instanceof Integer) {
+            salario = ((Integer) salarioObj).doubleValue();
+        } else if (salarioObj instanceof Double) {
+            salario = (Double) salarioObj;
         }
 
         return new Empleado(
@@ -155,6 +154,39 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     }
 
     @Override
+    public Empleado obtenerEmpleadoPorId(ObjectId objectId) {
+        // Buscar el empleado por su ObjectId
+        Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
+
+        // Si encontramos el documento, lo convertimos a Empleado
+        return (doc != null) ? convertirADocumentoAEmpleado(doc) : null;
+    }
+
+    @Override
+    public List<Empleado> obtenerEmpleados() {
+        return obtenerTodosEmpleados(); // Método que retorna todos los empleados
+    }
+
+    // Método agregado para agregar un EmpleadoDTO
+    public void agregarEmpleadoDTO(EmpleadoDTO empleadoDTO) {
+        try {
+            // Crear un Empleado usando el DTO
+            Empleado empleado = new Empleado(
+                    new ObjectId(), // Nuevo ObjectId para el empleado
+                    empleadoDTO.getNombre(),
+                    empleadoDTO.getCargo(),
+                    empleadoDTO.getSalario()
+            );
+
+            // Insertar el Empleado en la base de datos
+            Document doc = convertirAEmpleadoADocumento(empleado);
+            coleccion.insertOne(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public Empleado buscarPorId(int idEmpleado) {
         // Buscar el empleado por su idEmpleado (no por _id)
         Document doc = coleccion.find(Filters.eq("idEmpleado", idEmpleado)).first();
@@ -165,34 +197,6 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         } else {
             // Si no se encuentra el empleado, retornamos null
             return null;
-        }
-    }
-
-    @Override
-    public List<Empleado> obtenerRepartidores() {
-        List<Empleado> repartidores = new ArrayList<>();
-        try (MongoCursor<Document> cursor = coleccion.find(Filters.eq("puesto", "Repartidor")).iterator()) {
-            while (cursor.hasNext()) {
-                Document doc = cursor.next();
-                Empleado empleado = convertirADocumentoAEmpleado(doc);
-                repartidores.add(empleado); // Añadir al listado
-            }
-        } catch (Exception e) {
-            System.err.println("Error al obtener repartidores: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return repartidores;
-    }
-
-    @Override
-    public Empleado obtenerRepartidorPorId(String id) throws Exception {
-        try {
-            ObjectId objectId = new ObjectId(id); // Convertir el ID a ObjectId
-            Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
-            return (doc != null) ? convertirADocumentoAEmpleado(doc) : null; // Convertir o retornar null si no se encuentra
-        } catch (Exception e) {
-            System.err.println("Error al obtener repartidor por ID: " + e.getMessage());
-            throw e; // Lanzamos la excepción para que la maneje la capa superior
         }
     }
 }

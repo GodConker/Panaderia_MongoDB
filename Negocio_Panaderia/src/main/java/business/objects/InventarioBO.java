@@ -6,14 +6,14 @@ package business.objects;
 
 import interfaces.IInventarioBO;
 import interfaces.IInventarioDAO;
+import org.bson.types.ObjectId;
 
 /**
- *
- * @author danie
+ * Clase BO para manejar la lógica de negocio relacionada con el inventario.
  */
 public class InventarioBO implements IInventarioBO {
 
-    private IInventarioDAO inventarioDAO;
+    private final IInventarioDAO inventarioDAO;
 
     public InventarioBO(IInventarioDAO inventarioDAO) {
         this.inventarioDAO = inventarioDAO;
@@ -21,7 +21,12 @@ public class InventarioBO implements IInventarioBO {
 
     @Override
     public int obtenerCantidadDisponible(String idProducto) {
-        return inventarioDAO.obtenerCantidadDisponiblePorProducto(idProducto);
+        try {
+            ObjectId objectId = new ObjectId(idProducto); // Validación del formato de ObjectId
+            return inventarioDAO.obtenerCantidadDisponiblePorProducto(objectId);
+        } catch (IllegalArgumentException e) {
+            System.err.println("El ID del producto no es válido: " + idProducto);
+            return 0;
+        }
     }
 }
-

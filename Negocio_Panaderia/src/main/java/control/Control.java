@@ -17,6 +17,8 @@ import interfaces.IEmpleadoDAO;
 import interfaces.IEntregaDAO;
 import interfaces.IInventarioDAO;
 import interfaces.ITiendaDAO;
+import org.bson.types.ObjectId;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,109 +47,131 @@ public class Control {
         this.tiendaBO = new TiendaBO(tiendaDAO);
     }
 
-    public List<EmpleadoDTO> obtenerRepartidores() {
+    // Obtener todos los empleados (Repartidores, Cajeros y Panaderos)
+    public List<EmpleadoDTO> obtenerEmpleados() {
         try {
-            // Obtener los repartidores como entidades desde la capa de negocio
-            List<Empleado> empleados = empleadoBO.obtenerRepartidores();
-
-            // Convertir las entidades a DTOs antes de retornarlas
+            List<Empleado> empleados = empleadoBO.obtenerEmpleados();
             List<EmpleadoDTO> empleadosDTO = new ArrayList<>();
             for (Empleado empleado : empleados) {
                 EmpleadoDTO dto = new EmpleadoDTO();
-                dto.setId(empleado.getId().toString()); // Convertir ObjectId a String
+                dto.setId(empleado.getId().toString());
                 dto.setNombre(empleado.getNombre());
                 dto.setCargo(empleado.getCargo());
                 dto.setSalario(empleado.getSalario());
                 empleadosDTO.add(dto);
             }
-
             return empleadosDTO;
         } catch (Exception e) {
-            // Manejar excepciones si es necesario
+            throw new RuntimeException("Error al obtener los empleados: " + e.getMessage(), e);
+        }
+    }
+
+ public boolean agregarEmpleado(EmpleadoDTO empleadoDTO) {
+    try {
+        // Validar datos del empleado
+        if (empleadoDTO.getNombre().isEmpty() || empleadoDTO.getCargo() == null || empleadoDTO.getSalario() <= 0) {
+            return false;
+        }
+
+        // Validar que el cargo sea válido
+        if (!(empleadoDTO.getCargo().equals("Panadero") || 
+              empleadoDTO.getCargo().equals("Cajero") || 
+              empleadoDTO.getCargo().equals("Repartidor"))) {
+            return false;
+        }
+
+        // Crear el objeto de tipo Empleado para la base de datos
+        Empleado empleado = new Empleado(new ObjectId(), empleadoDTO.getNombre(), empleadoDTO.getCargo(), empleadoDTO.getSalario());
+
+        // Llamar al DAO para agregar el empleado
+        EmpleadoDAO empleadoDAO = new EmpleadoDAO();
+        empleadoDAO.agregarEmpleado(empleado);
+
+        return true; // Registro exitoso
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
+
+    public EmpleadoDTO obtenerEmpleadoPorId(String idEmpleado) {
+        try {
+            ObjectId objectId = new ObjectId(idEmpleado);
+            Empleado empleado = empleadoBO.obtenerEmpleadoPorId(objectId);
+
+            if (empleado == null) {
+                throw new RuntimeException("No se encontró un empleado con el ID: " + idEmpleado);
+            }
+
+            EmpleadoDTO dto = new EmpleadoDTO();
+            dto.setId(empleado.getId().toString());
+            dto.setNombre(empleado.getNombre());
+            dto.setCargo(empleado.getCargo());
+            dto.setSalario(empleado.getSalario());
+            return dto;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener el empleado por ID: " + e.getMessage(), e);
+        }
+    }
+
+    public List<EmpleadoDTO> obtenerRepartidores() {
+        // Implementar lógica para obtener empleados con cargo "Repartidor"
+        try {
+            List<Empleado> empleados = empleadoBO.obtenerEmpleados();
+            List<EmpleadoDTO> repartidores = new ArrayList<>();
+            for (Empleado empleado : empleados) {
+                if ("Repartidor".equals(empleado.getCargo())) {
+                    EmpleadoDTO dto = new EmpleadoDTO();
+                    dto.setId(empleado.getId().toString());
+                    dto.setNombre(empleado.getNombre());
+                    dto.setCargo(empleado.getCargo());
+                    dto.setSalario(empleado.getSalario());
+                    repartidores.add(dto);
+                }
+            }
+            return repartidores;
+        } catch (Exception e) {
             throw new RuntimeException("Error al obtener los repartidores: " + e.getMessage(), e);
         }
     }
 
     public List<TiendaDTO> obtenerTiendas() {
         try {
-            // Obtener las tiendas como entidades desde la capa de negocio
             List<Tienda> tiendas = tiendaBO.obtenerTiendas();
-
-            // Convertir las entidades a DTOs antes de retornarlas
             List<TiendaDTO> tiendasDTO = new ArrayList<>();
             for (Tienda tienda : tiendas) {
                 TiendaDTO dto = new TiendaDTO();
-                dto.setId(tienda.getIdAsString()); // Convertir ObjectId a String
+                dto.setId(tienda.getId().toString());
                 dto.setNombre(tienda.getNombre());
-                dto.setUbicacionCoordenadas(tienda.getUbicacionCoordenadas());
-                dto.setTelefono(tienda.getTelefono());
                 dto.setDireccion(tienda.getDireccion());
                 tiendasDTO.add(dto);
             }
-
             return tiendasDTO;
         } catch (Exception e) {
-            // Manejar excepciones si es necesario
             throw new RuntimeException("Error al obtener las tiendas: " + e.getMessage(), e);
         }
     }
 
-    public EmpleadoDTO obtenerRepartidorPorId(int idEmpleado) {
+    public String obtenerIdTiendaPorNombre(String nombreTiendaSeleccionada) {
         try {
-            // Obtener el repartidor usando idEmpleado
-            Empleado empleado = empleadoBO.obtenerRepartidorPorId(idEmpleado);
-
-            if (empleado == null) {
-                throw new RuntimeException("No se encontró un repartidor con el idEmpleado: " + idEmpleado);
-            }
-
-            // Convertir la entidad a DTO
-            EmpleadoDTO dto = new EmpleadoDTO();
-            dto.setIdEmpleado(empleado.getIdEmpleado());  // Usar idEmpleado
-            dto.setNombre(empleado.getNombre());
-            dto.setCargo(empleado.getCargo());
-            dto.setSalario(empleado.getSalario());
-            return dto;
+            Tienda tienda = tiendaBO.obtenerTiendaPorNombre(nombreTiendaSeleccionada);
+            return tienda != null ? tienda.getId().toString() : null;
         } catch (Exception e) {
-            // Manejar excepciones
-            throw new RuntimeException("Error al obtener el repartidor por ID: " + e.getMessage(), e);
-        }
-    }
-
-    public String obtenerIdTiendaPorNombre(String nombreTienda) {
-        try {
-            // Buscar la tienda por nombre utilizando TiendaBO
-            Tienda tienda = tiendaBO.obtenerTiendaPorNombre(nombreTienda);
-
-            // Si no se encuentra la tienda, retornar null
-            if (tienda == null) {
-                return null;
-            }
-
-            // Si la tienda se encuentra, retornar su ID como String
-            return tienda.getIdAsString(); // Asegúrate de que getIdAsString() devuelve el ID como String
-        } catch (Exception e) {
-            // Manejo de excepciones
             throw new RuntimeException("Error al obtener la tienda por nombre: " + e.getMessage(), e);
         }
     }
 
     public void registrarEntrega(EntregaDTO entregaDTO) {
         try {
-            // Delegar el registro al BO
             entregaBO.registrarEntrega(entregaDTO);
+            JOptionPane.showMessageDialog(null, "Entrega registrada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
             throw new RuntimeException("Error al registrar la entrega: " + e.getMessage(), e);
         }
     }
 
     public int calcularPaquetesDisponibles(String idProducto) {
-        try {
-            // Delegar la lógica al BO
-            return entregaBO.calcularPaquetesDisponiblesPorProducto(idProducto);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al calcular los paquetes disponibles: " + e.getMessage(), e);
-        }
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
-

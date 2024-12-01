@@ -15,6 +15,7 @@ import interfaces.IInventarioDAO;
 import java.util.ArrayList;
 import java.util.List;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -61,7 +62,6 @@ public class InventarioDAO implements IInventarioDAO {
         return inventarios;
     }
 
-    @Override
     public Inventario obtenerInventarioPorID(int id) {
         Document doc = coleccion.find(Filters.eq("idInventario", id)).first();
         return (doc != null) ? convertirADocumentoAInventario(doc) : null;
@@ -92,7 +92,6 @@ public class InventarioDAO implements IInventarioDAO {
         }
     }
 
-    @Override
     public boolean eliminarProductoDelInventario(int id) {
         try {
             Document filtro = new Document("idInventario", id);
@@ -116,7 +115,6 @@ public class InventarioDAO implements IInventarioDAO {
         return inventarios;
     }
 
-    @Override
     public int obtenerCantidadDisponiblePorProducto(String idProducto) {
         try {
             // Buscar en la colección usando el idProducto
@@ -131,5 +129,20 @@ public class InventarioDAO implements IInventarioDAO {
         }
         // Si no se encuentra el producto o ocurre un error, retornamos 0
         return 0;
+    }
+
+    @Override
+    public Inventario obtenerInventarioPorID(ObjectId id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean eliminarProductoDelInventario(ObjectId id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public int obtenerCantidadDisponiblePorProducto(ObjectId idProducto) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
