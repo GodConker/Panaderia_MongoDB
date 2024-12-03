@@ -26,4 +26,6 @@ public interface ITiendaDAO {
     List<Tienda> buscarTiendasPorNombre(String nombre);
     
     Tienda buscarTiendaPorNombre(String nombre);
+    
+    Tienda obtenerTiendaPorID(String id);
 }

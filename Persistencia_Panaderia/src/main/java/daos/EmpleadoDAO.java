@@ -87,6 +87,18 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     }
 
     @Override
+    public Empleado obtenerEmpleadoPorID(String id) {
+        try {
+            ObjectId objectId = new ObjectId(id); // Convertir String a ObjectId
+            Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
+            return (doc != null) ? convertirADocumentoAEmpleado(doc) : null;
+        } catch (IllegalArgumentException e) {
+            System.err.println("ID inválido para Empleado: " + id);
+            return null;
+        }
+    }
+
+    @Override
     public boolean agregarEmpleado(Empleado empleado) {
         try {
             Document doc = convertirAEmpleadoADocumento(empleado);

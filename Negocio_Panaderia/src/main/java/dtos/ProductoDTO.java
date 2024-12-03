@@ -13,6 +13,10 @@ public class ProductoDTO {
     private String nombre;
     private int cantidad;
     private double precio;
+    
+    public ProductoDTO(){
+        
+    }
 
     // Constructor de la clase ProductoDTO
     public ProductoDTO(String nombre, int cantidad, double precio) {

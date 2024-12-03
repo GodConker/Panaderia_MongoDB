@@ -51,4 +51,16 @@ public class TiendaBO {
             throw new RuntimeException("Error al obtener la tienda por nombre: " + e.getMessage(), e);
         }
     }
+    
+    // Método para obtener el nombre de la tienda por su ID
+    public String obtenerNombreTiendaPorId(String idTienda) {
+        Tienda tienda = tiendaDAO.obtenerTiendaPorID(idTienda);
+        return tienda != null ? tienda.getNombre() : "Tienda no encontrada";
+    }
+    
+    public Tienda obtenerTiendaPorID(String idTienda) {
+        // Llamar al DAO para obtener la tienda por ID
+        Tienda tienda = tiendaDAO.obtenerTiendaPorID(idTienda);
+        return tienda;
+    }
 }

@@ -26,5 +26,9 @@ public interface IEntregaDAO {
 
     List<Entrega> obtenerEntregasPorFecha(Date fecha);
     
-    void guardarEntrega(Entrega entrega);
+    List<Entrega> obtenerEntregasPorRangoFecha(Date fechaInicio, Date fechaFin);
+    
+    void actualizarEstadoPorId(String idEntrega, String nuevoEstado);
+    
+    String guardarEntrega(Entrega entrega);
 }

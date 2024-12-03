@@ -14,6 +14,7 @@ import interfaces.ITiendaDAO;
 import java.util.ArrayList;
 import java.util.List;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -63,6 +64,33 @@ public class TiendaDAO implements ITiendaDAO {
             );
         }
         return null; // Tienda no encontrada
+    }
+
+    @Override
+    public Tienda obtenerTiendaPorID(String id) {
+        try {
+            // Verificar si el id es válido
+            if (ObjectId.isValid(id)) {
+                ObjectId objectId = new ObjectId(id); // Convertir String a ObjectId
+                Document doc = coleccion.find(Filters.eq("_id", objectId)).first(); // Buscar por _id
+                if (doc != null) {
+                    return new Tienda(
+                            doc.getString("_id"), // Obtener el ID como String
+                            doc.getString("nombre"),
+                            doc.getString("ubicacionCoordenadas"),
+                            doc.getString("telefono"),
+                            doc.getString("direccion")
+                    );
+                } else {
+                    System.err.println("Tienda no encontrada para el ID: " + id);
+                }
+            } else {
+                System.err.println("ID inválido para Tienda: " + id);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al obtener la Tienda: " + e.getMessage());
+        }
+        return null; // Si no se encuentra la tienda o hay un error
     }
 
     @Override
@@ -134,19 +162,27 @@ public class TiendaDAO implements ITiendaDAO {
 
     @Override
     public Tienda buscarTiendaPorNombre(String nombre) {
-        // Filtramos por nombre exacto (ignorando mayúsculas/minúsculas)
-        Document doc = coleccion.find(Filters.regex("nombre", "^" + nombre + "$", "i")).first();
+        try {
+            // Filtramos por nombre exacto (ignorando mayúsculas/minúsculas)
+            Document doc = coleccion.find(Filters.regex("nombre", "^" + nombre + "$", "i")).first();
 
-        if (doc != null) {
-            String idAsString = doc.get("_id").toString(); 
-            return new Tienda(
-                    idAsString, // Pasar el id como String
-                    doc.getString("nombre"),
-                    doc.getString("ubicacionCoordenadas"),
-                    doc.getString("telefono"),
-                    doc.getString("direccion")
-            );
+            if (doc != null) {
+                // Obtener el ID como ObjectId y convertirlo a String
+                String idAsString = doc.getObjectId("_id").toString();  // Convertir ObjectId a String
+
+                // Crear y retornar la tienda con los datos obtenidos
+                return new Tienda(
+                        idAsString, // Ahora el ID es un String
+                        doc.getString("nombre"),
+                        doc.getString("ubicacionCoordenadas"),
+                        doc.getString("telefono"),
+                        doc.getString("direccion")
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Error al buscar la tienda por nombre: " + e.getMessage());
         }
+
         return null; // Si no se encuentra la tienda
     }
 }

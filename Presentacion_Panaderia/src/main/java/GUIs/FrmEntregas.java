@@ -5,17 +5,17 @@ import dtos.EmpleadoDTO;
 import dtos.EntregaDTO;
 import dtos.ProductoDTO;
 import dtos.TiendaDTO;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JOptionPane;
+import org.bson.types.ObjectId;
 
 public class FrmEntregas extends javax.swing.JFrame {
 
     private final Control control;
-
-    private final Map<String, String> tiendaMap = new HashMap<>();
 
     // Variables para los precios de los productos
     private final double precioDonas = 60.00;
@@ -515,9 +515,19 @@ public class FrmEntregas extends javax.swing.JFrame {
             if (respuesta == JOptionPane.YES_OPTION) {
                 // Crear EntregaDTO
                 EntregaDTO entregaDTO = new EntregaDTO();
-                entregaDTO.setFechaEntrega(new Date());
+
+                // Convertir la fecha UTC a hora local
+                Date fechaUTC = new Date(); // Fecha actual en UTC
+                ZonedDateTime utcDateTime = fechaUTC.toInstant().atZone(ZoneId.of("UTC"));
+                ZonedDateTime localDateTime = utcDateTime.withZoneSameInstant(ZoneId.systemDefault()).plusHours(1);
+
+                // Asignar la fecha local
+                entregaDTO.setFechaEntrega(Date.from(localDateTime.toInstant()));
+                // Imprimir la fecha local en consola
+                System.out.println("La hora de entrega es: " + localDateTime);
+
                 entregaDTO.setMontoTotal(Double.parseDouble(montoTotal));
-                entregaDTO.setIdTienda(idTiendaSeleccionada); // Asignar el ID de la tienda
+                entregaDTO.setIdTienda(idTiendaSeleccionada.toString());
 
                 // Obtener los repartidores desde el controlador
                 List<EmpleadoDTO> repartidores = control.obtenerRepartidores();
@@ -552,12 +562,29 @@ public class FrmEntregas extends javax.swing.JFrame {
                 }
 
                 // Registrar la entrega usando el controlador
-                control.registrarEntrega(entregaDTO);
+                String idEntrega = control.registrarEntrega(entregaDTO);
+
+                // Programar el cambio de estado en una hora
+                control.programarCambioEstado(idEntrega);
 
                 // Mostrar mensaje de éxito
                 JOptionPane.showMessageDialog(this, "¡Pedido registrado exitosamente!");
+
+                // Preguntar si desea agregar otro pedido
+                int agregarOtro = JOptionPane.showConfirmDialog(this, "¿Deseas agregar otro pedido?", "Nuevo Pedido", JOptionPane.YES_NO_OPTION);
+
+                if (agregarOtro == JOptionPane.YES_OPTION) {
+                    // Limpiar los campos de los productos y monto total
+                    CBXCantidadPaqueteDonas.setSelectedIndex(0);  // Ninguno
+                    CBXCantidadPaqueteEmpanadas.setSelectedIndex(0);  // Ninguno
+                    CBXCantidadPaqueteCoricos.setSelectedIndex(0);  // Ninguno
+                    TxtfMontoTotal.setText("0.00");  // Establecer monto total a 0.00
+                } else {
+                    // Si el usuario selecciona NO, redirigir al menú principal
+                    redirigirAlMenu();
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Pedido cancelado.");
+                this.dispose();
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al registrar el pedido: " + e.getMessage(),

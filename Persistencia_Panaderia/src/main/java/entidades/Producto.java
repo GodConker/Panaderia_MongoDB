@@ -53,6 +53,11 @@ public class Producto implements Serializable {
     public void setId(ObjectId id) {
         this.id = id;
     }
+    
+    // Método para obtener el ID como String
+    public String getIdAsString() {
+        return id != null ? id.toHexString() : null;
+    }
 
     public String getNombre() {
         return nombre;
@@ -99,10 +104,7 @@ public class Producto implements Serializable {
             return false;
         }
         Producto other = (Producto) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override

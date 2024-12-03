@@ -4,6 +4,7 @@
  */
 package dtos;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,10 +21,12 @@ public class EntregaDTO {
     private List<ProductoDTO> productos;
     private double montoTotal;
     private EmpleadoDTO repartidor;  // Cambio aquí para usar la entidad Empleado
+    private List<Integer> cantidades;  // Cantidades de productos entregados
 
     // Constructor de la clase EntregaDTO
     public EntregaDTO() {
         this.productos = new ArrayList<>(); // Inicializa la lista de productos
+        this.cantidades = new ArrayList<>();
     }
 
     // Getters y Setters
@@ -91,15 +94,24 @@ public class EntregaDTO {
     public EmpleadoDTO getRepartidor() {
         return repartidor;
     }
+    
+    public List<Integer> getCantidades() {
+        return cantidades;
+    }
+
+    public void setCantidades(List<Integer> cantidades) {
+        this.cantidades = cantidades;
+    }
 
     @Override
     public String toString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return "EntregaDTO{"
                 + "id='" + id + '\''
-                + ", fechaEntrega=" + fechaEntrega
+                + ", fechaEntrega=" + (fechaEntrega != null ? sdf.format(fechaEntrega) : "No disponible")
                 + ", idTienda='" + idTienda + '\''
-                + ", productos=" + productos
-                + ", montoTotal=" + montoTotal
+                + ", productos=" + productos.size()
+                + ", montoTotal=" + String.format("%.2f", montoTotal)
                 + ", repartidor=" + (repartidor != null ? repartidor.getNombre() : "No asignado")
                 + '}';
     }

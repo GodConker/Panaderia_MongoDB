@@ -32,4 +32,6 @@ public interface IEmpleadoDAO {
     Empleado obtenerRepartidorPorId(String id) throws Exception;
     
     Empleado buscarPorId(int idEmpleado);
+    
+    Empleado obtenerEmpleadoPorID(String id);
 }

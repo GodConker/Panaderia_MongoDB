@@ -28,6 +28,8 @@ public class Entrega implements Serializable {
 
     private double montoTotal;
 
+    private String estado;
+
     // Listas auxiliares para cantidades y precios
     private List<Integer> cantidades;
     private List<Double> precios;
@@ -37,6 +39,7 @@ public class Entrega implements Serializable {
         this.productos = new ArrayList<>();
         this.cantidades = new ArrayList<>();
         this.precios = new ArrayList<>();
+        this.estado = "En proceso de entrega";
     }
 
     public Entrega(Date fechaEntrega, Tienda tienda, Empleado repartidor, List<Producto> productos, double montoTotal) {
@@ -86,10 +89,6 @@ public class Entrega implements Serializable {
         this.repartidor = repartidor;
     }
 
-    public List<Producto> getProductos() {
-        return productos;
-    }
-
     public void setProductos(List<Producto> productos) {
         this.productos = productos;
     }
@@ -102,16 +101,8 @@ public class Entrega implements Serializable {
         this.montoTotal = montoTotal;
     }
 
-    public List<Integer> getCantidades() {
-        return cantidades;
-    }
-
     public void setCantidades(List<Integer> cantidades) {
         this.cantidades = cantidades;
-    }
-
-    public List<Double> getPrecios() {
-        return precios;
     }
 
     public void setPrecios(List<Double> precios) {
@@ -136,6 +127,35 @@ public class Entrega implements Serializable {
         this.id = (id != null) ? new ObjectId(id) : null;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public List<Producto> getProductos() {
+        if (productos == null) {
+            productos = new ArrayList<>();
+        }
+        return productos;
+    }
+
+    public List<Integer> getCantidades() {
+        if (cantidades == null) {
+            cantidades = new ArrayList<>();
+        }
+        return cantidades;
+    }
+
+    public List<Double> getPrecios() {
+        if (precios == null) {
+            precios = new ArrayList<>();
+        }
+        return precios;
+    }
+
     @Override
     public String toString() {
         return "Entrega{"
@@ -145,6 +165,7 @@ public class Entrega implements Serializable {
                 + ", repartidor=" + (repartidor != null ? repartidor.getNombre() : "null")
                 + ", productos=" + productos
                 + ", montoTotal=" + montoTotal
+                + ", estado='" + estado + '\''
                 + '}';
     }
 }

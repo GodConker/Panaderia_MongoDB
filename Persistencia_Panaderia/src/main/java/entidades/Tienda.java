@@ -4,17 +4,14 @@
  */
 package entidades;
 
-
 import java.io.Serializable;
 
 /**
  * Clase que representa la entidad 'Tienda' en MongoDB
  */
-
 public class Tienda implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
 
     private String id;
 
@@ -52,13 +49,13 @@ public class Tienda implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public String getIdAsString() {
-        return id != null ? id.toString() : null;
+        return id != null ? id : null;
     }
 
     public void setIdFromString(String id) {
-        this.id = (id != null) ? new String(id) : null;
+        this.id = (id != null) ? id : null;
     }
 
     public String getNombre() {
@@ -106,10 +103,7 @@ public class Tienda implements Serializable {
             return false;
         }
         Tienda other = (Tienda) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
