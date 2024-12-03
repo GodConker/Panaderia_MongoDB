@@ -54,7 +54,7 @@ public class Control {
             List<EmpleadoDTO> empleadosDTO = new ArrayList<>();
             for (Empleado empleado : empleados) {
                 EmpleadoDTO dto = new EmpleadoDTO();
-                dto.setId(empleado.getId().toString());
+                dto.setId(empleado.getIdAsString());
                 dto.setNombre(empleado.getNombre());
                 dto.setCargo(empleado.getCargo());
                 dto.setSalario(empleado.getSalario());
