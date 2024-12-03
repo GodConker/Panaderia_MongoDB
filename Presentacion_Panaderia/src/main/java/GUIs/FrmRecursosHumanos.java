@@ -321,58 +321,70 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
 
     private void BtnAgregarActualizarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAgregarActualizarEmpleadoActionPerformed
 // Obtener los datos de los campos
-    String nombre = TxtfNombreEmpleado.getText().trim();
-    String cargo = (String) CBXCargoEmpleado.getSelectedItem();
-    String salarioText = TxtfSalarioEmpleado.getText().trim();
+        String nombre = TxtfNombreEmpleado.getText().trim();
+        String cargo = (String) CBXCargoEmpleado.getSelectedItem();
+        String salarioText = TxtfSalarioEmpleado.getText().trim();
 
-    // Validar si los campos están vacíos
-    if (nombre.isEmpty() || cargo.isEmpty() || salarioText.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(
+        // Validar si los campos están vacíos
+        if (nombre.isEmpty() || cargo.isEmpty() || salarioText.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Por favor, llene todos los campos antes de agregar un empleado.",
+                    "Advertencia",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+            );
+            return; // Salir del método si los campos están vacíos
+        }
+
+        // Crear un objeto DTO para el empleado
+        double salario = Double.parseDouble(salarioText); // Asume que el valor es válido
+        EmpleadoDTO empleadoDTO = new EmpleadoDTO(nombre, cargo, salario);
+
+        // Confirmación antes de agregar al empleado
+        int confirmacion = javax.swing.JOptionPane.showConfirmDialog(
                 this,
-                "Por favor, llene todos los campos antes de agregar un empleado.",
-                "Advertencia",
-                javax.swing.JOptionPane.WARNING_MESSAGE
+                "¿Está seguro de que desea agregar al empleado?",
+                "Confirmación",
+                javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.QUESTION_MESSAGE
         );
-        return; // Salir del método si los campos están vacíos
+
+        // Si el usuario selecciona "Sí"
+        if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
+            boolean exito = control.agregarEmpleado(empleadoDTO); // Intentar agregar al empleado
+            if (exito) {
+                javax.swing.JOptionPane.showMessageDialog(
+                        this,
+                        "Empleado agregado correctamente.",
+                        "Éxito",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(
+                        this,
+                        "Ocurrió un error al agregar al empleado. Intente nuevamente.",
+                        "Error",
+                        javax.swing.JOptionPane.ERROR_MESSAGE
+                );
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Agregación del empleado cancelada.",
+                    "Cancelado",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+            );
+        }
+
+        // Limpiar siempre los campos tras la confirmación
+        limpiarCampos();
     }
-
-    // El salario ya está establecido automáticamente, no es necesario validarlo
-
-    // Obtener el salario directamente de la caja de texto
-    double salario = Double.parseDouble(salarioText);
-
-    // Crear un objeto DTO para el empleado
-    EmpleadoDTO empleadoDTO = new EmpleadoDTO(nombre, cargo, salario);
-
-    // Llamar al controlador para agregar el empleado
-    boolean exito = control.agregarEmpleado(empleadoDTO);
-
-    if (exito) {
-        javax.swing.JOptionPane.showMessageDialog(
-                this,
-                "Empleado agregado correctamente.",
-                "Éxito",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE
-        );
-
-        // Actualizar la tabla con la lista de empleados y limpiar los campos
-        llenarTablaEmpleados();
-        limpiarCampos(); // Limpiar los campos de la interfaz
-    } else {
-        javax.swing.JOptionPane.showMessageDialog(
-                this,
-                "No se pudo agregar el empleado. Revise los datos e inténtelo de nuevo.",
-                "Error",
-                javax.swing.JOptionPane.ERROR_MESSAGE
-        );
-    }
-}
 
 // Método para limpiar los campos de la interfaz
-private void limpiarCampos() {
-    TxtfNombreEmpleado.setText("");         // Limpiar campo de nombre
-    CBXCargoEmpleado.setSelectedIndex(0);   // Restablecer ComboBox a su primer valor
-    TxtfSalarioEmpleado.setText("0.00");    // Restablecer salario a valor predeterminado
+    private void limpiarCampos() {
+        TxtfNombreEmpleado.setText("");         // Limpiar campo de nombre
+        CBXCargoEmpleado.setSelectedIndex(0);   // Restablecer ComboBox a su primer valor
+        TxtfSalarioEmpleado.setText("0.00");    // Restablecer salario a valor predeterminado
     }//GEN-LAST:event_BtnAgregarActualizarEmpleadoActionPerformed
 
     private void BtnRegresarMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRegresarMenuActionPerformed

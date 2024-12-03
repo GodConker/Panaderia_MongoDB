@@ -185,7 +185,7 @@ public class EmpleadoDAO implements IEmpleadoDAO {
             e.printStackTrace();
         }
     }
-
+    
     @Override
     public Empleado buscarPorId(int idEmpleado) {
         // Buscar el empleado por su idEmpleado (no por _id)

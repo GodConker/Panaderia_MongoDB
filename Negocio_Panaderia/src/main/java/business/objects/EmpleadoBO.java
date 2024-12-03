@@ -45,4 +45,14 @@ public class EmpleadoBO {
             throw new RuntimeException("Error al obtener el empleado por ID: " + e.getMessage(), e);
         }
     }
+
+    public boolean agregarEmpleado(Empleado empleado) {
+        try {
+            // Llamar al DAO para insertar el empleado
+            empleadoDAO.agregarEmpleado(empleado);
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al agregar el empleado: " + e.getMessage(), e);
+        }
+    }
 }

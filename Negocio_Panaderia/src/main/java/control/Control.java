@@ -66,34 +66,23 @@ public class Control {
         }
     }
 
- public boolean agregarEmpleado(EmpleadoDTO empleadoDTO) {
-    try {
-        // Validar datos del empleado
-        if (empleadoDTO.getNombre().isEmpty() || empleadoDTO.getCargo() == null || empleadoDTO.getSalario() <= 0) {
-            return false;
+    public boolean agregarEmpleado(EmpleadoDTO empleadoDTO) {
+        try {
+            Empleado empleado = new Empleado();
+            empleado.setNombre(empleadoDTO.getNombre());
+            empleado.setCargo(empleadoDTO.getCargo());
+            empleado.setSalario(empleadoDTO.getSalario());
+
+            // Llamar a la lógica del BO
+            boolean resultado = empleadoBO.agregarEmpleado(empleado);
+            if (resultado) {
+                JOptionPane.showMessageDialog(null, "Empleado agregado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            }
+            return resultado;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al agregar empleado: " + e.getMessage(), e);
         }
-
-        // Validar que el cargo sea válido
-        if (!(empleadoDTO.getCargo().equals("Panadero") || 
-              empleadoDTO.getCargo().equals("Cajero") || 
-              empleadoDTO.getCargo().equals("Repartidor"))) {
-            return false;
-        }
-
-        // Crear el objeto de tipo Empleado para la base de datos
-        Empleado empleado = new Empleado(new ObjectId(), empleadoDTO.getNombre(), empleadoDTO.getCargo(), empleadoDTO.getSalario());
-
-        // Llamar al DAO para agregar el empleado
-        EmpleadoDAO empleadoDAO = new EmpleadoDAO();
-        empleadoDAO.agregarEmpleado(empleado);
-
-        return true; // Registro exitoso
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false;
     }
-}
-
 
     public EmpleadoDTO obtenerEmpleadoPorId(String idEmpleado) {
         try {
