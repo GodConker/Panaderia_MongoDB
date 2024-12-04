@@ -18,8 +18,11 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import dtos.ProductoDTO;
 import java.io.FileOutputStream;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 
 /**
@@ -35,109 +38,57 @@ public class FrmReporteVenta extends javax.swing.JFrame {
      * Creates new form FrmReporteVenta
      */
     public FrmReporteVenta() {
-
         initComponents();
+        setLocationRelativeTo(null);
         control = new Control(); // Inicializa el objeto Control
         cargarEntregasEnTabla(entregas);
-
-        // Crear el objeto DatePickerSettings para DPFecha (Fecha Desde)
-        DatePickerSettings datePickerSettings = new DatePickerSettings();
-
-        // Configurar DPFecha (Fecha Desde) para permitir solo fechas de hace 2 semanas hasta mañana
-        LocalDate today = LocalDate.now();
-        LocalDate tomorrow = today.plusDays(1); // Día de mañana
-        LocalDate twoWeeksAgo = today.minus(2, ChronoUnit.WEEKS); // Hace 2 semanas
-
-        // Crear el componente DatePicker usando los ajustes configurados
-        DPFecha = new DatePicker(datePickerSettings);
-        DPFecha.getSettings().setDateRangeLimits(twoWeeksAgo, tomorrow); // Establecer el rango de fechas para DPFecha
-
-        // Crear el objeto DatePickerSettings para DPFecha1 (Fecha Hasta)
-        DatePickerSettings datePickerSettings1 = new DatePickerSettings();
-
-        // Limitar la fecha hasta mañana (solo se puede seleccionar hasta mañana)
-        DPFecha1 = new DatePicker(datePickerSettings1);
-        DPFecha1.getSettings().setDateRangeLimits(today, tomorrow); // Establecer el límite superior para DPFecha1
+        inicializarFormulario();
     }
 
     // Método para cargar las entregas en la tabla
     private void cargarEntregasEnTabla(List<EntregaDTO> entregas) {
         DefaultTableModel model = (DefaultTableModel) TablaReporteVenta.getModel();
-        model.setRowCount(0); // Limpiar filas existentes
+        model.setRowCount(0); // Limpiar la tabla
 
         for (EntregaDTO entrega : entregas) {
-            // Obtener el nombre de la tienda
-            String nombreTienda = control.obtenerNombreTiendaPorId(entrega.getIdTienda());  // Ahora obtienes el nombre de la tienda
+            // Obtener el nombre de la tienda de la capa de negocio
+            String nombreTienda = control.obtenerNombreTiendaPorId(entrega.getIdTienda());
 
-            // Mostrar los productos y cantidades en la tabla
-            StringBuilder productosString = new StringBuilder();
-            StringBuilder cantidadesString = new StringBuilder();
+            // Construir los productos y cantidades
+            String productosString = String.join(", ",
+                    entrega.getProductos().stream().map(ProductoDTO::getNombre).toList());
+            String cantidadesString = entrega.getCantidades().toString();
 
-            for (int i = 0; i < entrega.getProductos().size(); i++) {
-                if (i > 0) {
-                    productosString.append(", ");
-                    cantidadesString.append(", ");
-                }
-                productosString.append(entrega.getProductos().get(i).getNombre());
-                cantidadesString.append(entrega.getCantidades().get(i));  // Asumiendo que las cantidades están bien asociadas
-            }
-
-            Object[] row = new Object[4]; // Ajusta las columnas según tus necesidades
-            row[0] = nombreTienda;  // Mostrar el nombre de la tienda en lugar del ID
-            row[1] = productosString.toString();  // Mostrar los productos como una lista separada por comas
-            row[2] = cantidadesString.toString();  // Mostrar las cantidades como una lista separada por comas
-            row[3] = entrega.getMontoTotal();  // El monto total de la entrega
+            // Crear fila
+            Object[] row = {
+                nombreTienda, // Nombre de la tienda
+                productosString, // Lista de productos
+                cantidadesString, // Lista de cantidades
+                entrega.getMontoTotal() // Total de la entrega
+            };
 
             model.addRow(row);
         }
     }
 
-    private void buscarEntregas() {
-        try {
-            // Obtener las fechas desde los DatePickers
-            LocalDate fechaInicio = DPFecha.getDate();  // Fecha Desde (2 semanas atrás)
-            LocalDate fechaFin = DPFecha1.getDate();    // Fecha Hasta (Hoy)
+    private void inicializarFormulario() {
+        // Obtener la fecha actual en UTC
+        ZonedDateTime nowUTC = ZonedDateTime.now(ZoneOffset.UTC);
+        LocalDate hoyUTC = nowUTC.toLocalDate(); // Fecha de hoy en UTC
+        LocalDate limiteDesde = hoyUTC.minusMonths(1); // Límite de selección: hace 1 mes desde hoy en UTC
 
-            // Calcular el día de mañana
-            LocalDate tomorrow = LocalDate.now().plusDays(1); // Día de mañana
+        // Configurar límites en los DatePickers
+        configurarLimitesDatePicker(DPFechaDesde, limiteDesde, hoyUTC);
+        configurarLimitesDatePicker(DPFechaHasta, limiteDesde, hoyUTC);
 
-            // Si no se selecciona ninguna fecha, se asignan valores por defecto
-            if (fechaInicio == null) {
-                fechaInicio = LocalDate.now().minusWeeks(2);  // 2 semanas atrás
-            }
+        // Opcional: Inicializar los DatePickers con valores predeterminados
+        DPFechaDesde.setDate(hoyUTC.minusWeeks(1)); // Por ejemplo, hace una semana
+        DPFechaHasta.setDate(hoyUTC); // Hoy
+    }
 
-            if (fechaFin == null) {
-                fechaFin = tomorrow;  // Mañana
-            }
-
-            // Convertir las fechas a tipo Date
-            Date fechaInicioDate = Date.from(fechaInicio.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            Date fechaFinDate = Date.from(fechaFin.atStartOfDay(ZoneId.systemDefault()).toInstant());
-
-            // Mostrar las fechas en consola para depuración
-            System.out.println("Buscando entregas entre: " + fechaInicioDate + " y " + fechaFinDate);
-
-            // Llamar al método en Control para obtener las entregas dentro del rango
-            entregas.clear(); // Limpiar la lista global
-            entregas.addAll(control.obtenerEntregasPorFecha(fechaInicioDate, fechaFinDate));
-
-            // Mostrar las entregas obtenidas en consola (opcional)
-            System.out.println("Entregas obtenidas: " + entregas.size());
-            for (EntregaDTO entrega : entregas) {
-                System.out.println(entrega);
-            }
-
-            // Verificar que la lista de entregas no esté vacía antes de cargarla en la tabla
-            if (!entregas.isEmpty()) {
-                System.out.println("Cargando " + entregas.size() + " entregas en la tabla.");
-                cargarEntregasEnTabla(entregas);
-            } else {
-                System.out.println("No se encontraron entregas para mostrar.");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void configurarLimitesDatePicker(DatePicker datePicker, LocalDate limiteDesde, LocalDate hoyUTC) {
+        DatePickerSettings settings = datePicker.getSettings();
+        settings.setDateRangeLimits(limiteDesde, hoyUTC); // Establece el rango permitido
     }
 
     /**
@@ -161,8 +112,8 @@ public class FrmReporteVenta extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         BtnGenerarReporte = new javax.swing.JButton();
         BtnExportarPDF = new javax.swing.JButton();
-        DPFecha = new com.github.lgooddatepicker.components.DatePicker();
-        DPFecha1 = new com.github.lgooddatepicker.components.DatePicker();
+        DPFechaDesde = new com.github.lgooddatepicker.components.DatePicker();
+        DPFechaHasta = new com.github.lgooddatepicker.components.DatePicker();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -243,11 +194,11 @@ public class FrmReporteVenta extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(DPFecha1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(DPFechaHasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(DPFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(DPFechaDesde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addGap(36, 36, 36)))
@@ -293,11 +244,11 @@ public class FrmReporteVenta extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
-                            .addComponent(DPFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(DPFechaDesde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
-                            .addComponent(DPFecha1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(DPFechaHasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(BtnGenerarReporte)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -334,14 +285,68 @@ public class FrmReporteVenta extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_BtnRegresarActionPerformed
 
+
     private void BtnGenerarReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnGenerarReporteActionPerformed
         // TODO add your handling code here:
-        buscarEntregas();
+        try {
+            // Obtener la fecha actual en UTC
+            ZonedDateTime nowUTC = ZonedDateTime.now(ZoneOffset.UTC);
+            LocalDate hoyUTC = nowUTC.toLocalDate(); // Fecha de hoy en UTC
+
+            // Verificar si las fechas son válidas
+            LocalDate fechaInicio = DPFechaDesde.getDate();  // Fecha Desde
+            LocalDate fechaFin = DPFechaHasta.getDate();    // Fecha Hasta
+
+            if (fechaInicio == null || fechaFin == null) {
+                JOptionPane.showMessageDialog(this, "Por favor, seleccione las fechas correctamente.");
+                return; // Salir del método si no se seleccionaron fechas
+            }
+
+            // Validar que la fecha Desde no sea posterior a la fecha Hasta
+            if (fechaInicio.isAfter(fechaFin)) {
+                JOptionPane.showMessageDialog(this,
+                        "La fecha Desde no puede ser posterior a la fecha Hasta.",
+                        "Advertencia",
+                        JOptionPane.WARNING_MESSAGE);
+                return; // Salir del método si el rango es inválido
+            }
+
+            // Mostrar las fechas seleccionadas para depuración
+            System.out.println("Fecha inicio: " + fechaInicio + " (Fecha Desde)");
+            System.out.println("Fecha fin: " + fechaFin + " (Fecha Hasta)");
+
+            // Convertir fecha Desde a LocalDateTime (hora 00:00:00)
+            LocalDateTime fechaInicioDateTime = fechaInicio.atStartOfDay();
+
+            // Ajustar fecha Hasta para incluir la hora actual en UTC
+            LocalDateTime fechaFinDateTime = fechaFin.atTime(nowUTC.toLocalTime());
+
+            // Convertir las fechas a tipo Date
+            Date fechaInicioDate = Date.from(fechaInicioDateTime.atZone(ZoneId.systemDefault()).toInstant());
+            Date fechaFinDate = Date.from(fechaFinDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+            // Mostrar las fechas convertidas en consola para depuración
+            System.out.println("Buscando entregas entre: " + fechaInicioDate + " y " + fechaFinDate);
+
+            // Llamar al método en Control para obtener las entregas dentro del rango
+            entregas.clear(); // Limpiar la lista global
+            entregas.addAll(control.obtenerEntregasPorFecha(fechaInicioDate, fechaFinDate));
+
+            // Verificar que la lista de entregas no esté vacía antes de cargarla en la tabla
+            if (!entregas.isEmpty()) {
+                System.out.println("Cargando " + entregas.size() + " entregas en la tabla.");
+                cargarEntregasEnTabla(entregas);
+            } else {
+                JOptionPane.showMessageDialog(this, "No se encontraron entregas para el rango de fechas seleccionado.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_BtnGenerarReporteActionPerformed
 
     private void BtnExportarPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnExportarPDFActionPerformed
         // TODO add your handling code here:
-
+        // Verificar si hay entregas disponibles
         if (entregas.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No hay entregas para exportar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
@@ -349,27 +354,48 @@ public class FrmReporteVenta extends javax.swing.JFrame {
 
         com.itextpdf.text.Document document = new com.itextpdf.text.Document();
         try {
+            // Crear el archivo PDF
             PdfWriter.getInstance(document, new FileOutputStream("ReporteEntregas.pdf"));
             document.open();
-            document.add(new Paragraph("Reporte de Entregas"));
 
-            PdfPTable table = new PdfPTable(4); // Cuatro columnas: Tienda, Producto, Cantidad, Total
+            // Título del reporte
+            document.add(new Paragraph("Reporte de Entregas\n\n"));
+
+            // Crear la tabla con cuatro columnas
+            PdfPTable table = new PdfPTable(4); // Tienda, Productos, Cantidades, Total
             table.addCell("Tienda");
-            table.addCell("Producto");
-            table.addCell("Cantidad");
+            table.addCell("Productos");
+            table.addCell("Cantidades");
             table.addCell("Total");
 
+            // Recorrer las entregas y agregar los datos a la tabla
             for (EntregaDTO entrega : entregas) {
-                String tienda = entrega.getIdTienda(); // ID o nombre de la tienda
-                for (ProductoDTO producto : entrega.getProductos()) {
-                    table.addCell(tienda); // Tienda
-                    table.addCell(producto.getNombre()); // Producto
-                    table.addCell(String.valueOf(producto.getCantidad())); // Cantidad
-                    table.addCell(String.valueOf(producto.getCantidad() * producto.getPrecio())); // Total
-                }
+                // Obtener el nombre de la tienda desde el control
+                String nombreTienda = control.obtenerNombreTiendaPorId(entrega.getIdTienda());
+
+                // Crear la lista de productos y cantidades
+                String productosString = String.join(", ",
+                        entrega.getProductos().stream().map(ProductoDTO::getNombre).toList());
+                String cantidadesString = entrega.getProductos().stream()
+                        .map(producto -> {
+                            // Depurar la cantidad de cada producto
+                            System.out.println("Producto: " + producto.getNombre() + ", Cantidad: " + producto.getCantidad());
+                            return String.valueOf(producto.getCantidad());
+                        })
+                        .collect(Collectors.joining(", "));
+
+                System.out.println("Cantidades generadas para el PDF: " + cantidadesString);  // Verificar el string resultante
+
+                // Añadir los datos a la tabla
+                table.addCell(nombreTienda); // Nombre de la tienda
+                table.addCell(productosString); // Lista de productos
+                table.addCell(cantidadesString); // Lista de cantidades
+                table.addCell(String.format("%.2f", entrega.getMontoTotal())); // Total de la entrega
             }
 
+            // Agregar la tabla al documento
             document.add(table);
+
             JOptionPane.showMessageDialog(this, "Reporte exportado exitosamente.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -421,8 +447,8 @@ public class FrmReporteVenta extends javax.swing.JFrame {
     private javax.swing.JButton BtnExportarPDF;
     private javax.swing.JButton BtnGenerarReporte;
     private javax.swing.JButton BtnRegresar;
-    private com.github.lgooddatepicker.components.DatePicker DPFecha;
-    private com.github.lgooddatepicker.components.DatePicker DPFecha1;
+    private com.github.lgooddatepicker.components.DatePicker DPFechaDesde;
+    private com.github.lgooddatepicker.components.DatePicker DPFechaHasta;
     private javax.swing.JTable TablaReporteVenta;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

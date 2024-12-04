@@ -12,6 +12,24 @@ public class EmpleadoDTO {
     private String cargo;
     private Double salario;  // Tipo Double para alinearse con la clase Empleado
 
+    public EmpleadoDTO() {
+    }
+    
+     // Constructor con parámetros
+    public EmpleadoDTO(String nombre, String cargo, Double salario) {
+        this.nombre = nombre;
+        this.cargo = cargo;
+        this.salario = salario;
+    }   
+    
+    public EmpleadoDTO(String id, /*int idEmpleado,*/ String nombre, String cargo, Double salario) {
+        this.id = id;
+        /*this.idEmpleado = idEmpleado;*/
+        this.nombre = nombre;
+        this.cargo = cargo;
+        this.salario = salario;
+    }
+
     // Getters y Setters
     public String getId() {
         return id;

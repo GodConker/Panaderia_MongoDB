@@ -4,17 +4,136 @@
  */
 package GUIs;
 
+import control.Control;
+import dtos.EmpleadoDTO;
+import java.text.DecimalFormat;
+import java.util.List;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Dell
  */
 public class FrmRecursosHumanos extends javax.swing.JFrame {
 
+    private Control control;
+
     /**
      * Creates new form otroframe
      */
     public FrmRecursosHumanos() {
         initComponents();
+        setLocationRelativeTo(null);
+        control = new Control();
+        llenarTablaEmpleados();
+        agregarListenerSeleccionFila();
+        configurarComboBoxCargo();
+
+        // Inicializar el botón como "Agregar"
+        BtnAgregarActualizarEmpleado.setText("Agregar");
+    }
+
+    private void llenarTablaEmpleados() {
+        // Obtener la lista de empleados
+        List<EmpleadoDTO> listaEmpleados = control.obtenerEmpleados();
+
+        // Obtener el modelo de la tabla
+        DefaultTableModel model = (DefaultTableModel) TableEmpleados.getModel();
+
+        // Limpiar la tabla
+        model.setRowCount(0);
+
+        // Llenar la tabla con los datos de los empleados
+        for (EmpleadoDTO empleado : listaEmpleados) {
+            Object[] fila = new Object[3];
+            fila[0] = empleado.getNombre();
+            fila[1] = empleado.getCargo();
+            fila[2] = empleado.getSalario();
+
+            // Añadir la fila al modelo
+            model.addRow(fila);
+        }
+
+        // Configurar la tabla para que no sea editable
+        TableEmpleados.setDefaultEditor(Object.class, null); // Deshabilitar edición
+        TableEmpleados.clearSelection();
+    }
+
+    private boolean modoAgregar = true;
+    private boolean modoActualizar = false;
+
+    private String empleadoSeleccionadoId;  // Variable para almacenar el nombre del empleado seleccionado
+
+    private void agregarListenerSeleccionFila() {
+        TableEmpleados.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int row = TableEmpleados.getSelectedRow();
+
+                    if (row >= 0) {
+                        DefaultTableModel model = (DefaultTableModel) TableEmpleados.getModel();
+                        String nombre = model.getValueAt(row, 0).toString();
+                        String cargo = model.getValueAt(row, 1).toString();
+                        String salario = model.getValueAt(row, 2).toString();
+
+                        // Establecer los valores en los campos
+                        TxtfNombreEmpleado.setText(nombre);
+                        CBXCargoEmpleado.setSelectedItem(cargo);
+                        TxtfSalarioEmpleado.setText(salario);
+
+                        // Guardar el nombre del empleado seleccionado para actualizar
+                        empleadoSeleccionadoId = control.obtenerEmpleados().get(row).getId();
+
+                        // Cambiar el texto del botón a "Actualizar"
+                        BtnAgregarActualizarEmpleado.setText("Actualizar");
+                        modoActualizar = true;
+                        modoAgregar = false; // Cambio de modo
+                    }
+                }
+            }
+        });
+    }
+
+    // Configurar el JComboBox de Cargos
+    private void configurarComboBoxCargo() {
+        // Deshabilitar la edición del JTextField de salario
+        TxtfSalarioEmpleado.setEditable(false);
+
+        // Agregar un Listener para cambiar el salario según el cargo seleccionado
+        CBXCargoEmpleado.addActionListener(evt -> actualizarSalarioPorCargo());
+    }
+
+    // Actualizar el salario dependiendo del cargo seleccionado
+    private void actualizarSalarioPorCargo() {
+        // Obtener el cargo seleccionado
+        String cargo = (String) CBXCargoEmpleado.getSelectedItem();
+
+        // Establecer el salario dependiendo del cargo con formato decimal
+        DecimalFormat df = new DecimalFormat("#.00");  // Formato para 2 decimales
+        switch (cargo) {
+            case "Repartidor":
+                TxtfSalarioEmpleado.setText(df.format(4000.00)); // 4000.00 con dos decimales
+                break;
+            case "Cajero":
+                TxtfSalarioEmpleado.setText(df.format(2000.00)); // 2000.00 con dos decimales
+                break;
+            case "Panadero":
+                TxtfSalarioEmpleado.setText(df.format(6000.00)); // 6000.00 con dos decimales
+                break;
+            default:
+                TxtfSalarioEmpleado.setText("0.00");
+                break;
+        }
+    }
+
+    // Método para limpiar los campos de la interfaz
+    private void limpiarCampos() {
+        TxtfNombreEmpleado.setText("");         // Limpiar campo de nombre
+        CBXCargoEmpleado.setSelectedIndex(0);   // Restablecer ComboBox a su primer valor
+        TxtfSalarioEmpleado.setText("0.00");    // Restablecer salario a valor predeterminado
     }
 
     /**
@@ -34,7 +153,7 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
         TableEmpleados = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         TxtfSalarioEmpleado = new javax.swing.JTextField();
-        BtnAgregarEmpleado = new javax.swing.JButton();
+        BtnAgregarActualizarEmpleado = new javax.swing.JButton();
         BtnRegresarMenu1 = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         TxtfNombreEmpleado = new javax.swing.JTextField();
@@ -78,10 +197,10 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
             }
         });
 
-        BtnAgregarEmpleado.setText("Agregar");
-        BtnAgregarEmpleado.addActionListener(new java.awt.event.ActionListener() {
+        BtnAgregarActualizarEmpleado.setText("Agregar");
+        BtnAgregarActualizarEmpleado.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BtnAgregarEmpleadoActionPerformed(evt);
+                BtnAgregarActualizarEmpleadoActionPerformed(evt);
             }
         });
 
@@ -157,7 +276,7 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
                         .addGap(164, 164, 164)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(BtnAgregarEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(BtnAgregarActualizarEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(BtnEliminarEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(BtnRegresarMenu1, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -192,7 +311,7 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
                             .addComponent(TxtfSalarioEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(BtnAgregarEmpleado)
+                    .addComponent(BtnAgregarActualizarEmpleado)
                     .addComponent(BtnEliminarEmpleado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(BtnRegresarMenu1)
@@ -213,9 +332,117 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void BtnAgregarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAgregarEmpleadoActionPerformed
+    private void BtnAgregarActualizarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAgregarActualizarEmpleadoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_BtnAgregarEmpleadoActionPerformed
+        // Obtener los datos de los campos
+        String nombre = TxtfNombreEmpleado.getText().trim();
+        String cargo = (String) CBXCargoEmpleado.getSelectedItem();
+        String salarioText = TxtfSalarioEmpleado.getText().trim();
+
+        // Validar si los campos están vacíos
+        if (nombre.isEmpty() || cargo.isEmpty() || salarioText.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Por favor, llene todos los campos antes de agregar o actualizar el empleado.",
+                    "Advertencia",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        // Intentar convertir el salario a tipo double
+        double salario = 0;
+        try {
+            salario = Double.parseDouble(salarioText);
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "El salario debe ser un valor numérico válido.",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // Modo Agregar
+        if (modoAgregar) {
+            EmpleadoDTO empleadoDTO = new EmpleadoDTO(nombre, cargo, salario);
+
+            int confirmacion = javax.swing.JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Está seguro de que desea agregar al empleado?",
+                    "Confirmación",
+                    javax.swing.JOptionPane.YES_NO_OPTION,
+                    javax.swing.JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
+                boolean exito = control.agregarEmpleado(empleadoDTO);
+                if (exito) {
+                    javax.swing.JOptionPane.showMessageDialog(
+                            this,
+                            "Empleado agregado correctamente.",
+                            "Éxito",
+                            javax.swing.JOptionPane.INFORMATION_MESSAGE
+                    );
+                    llenarTablaEmpleados(); // Actualizar la tabla después de agregar
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(
+                            this,
+                            "Ocurrió un error al agregar al empleado. Intente nuevamente.",
+                            "Error",
+                            javax.swing.JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            }
+        } // Modo Actualizar
+        else if (modoActualizar) {
+            // Verificar que el ID del empleado seleccionado no sea nulo o vacío
+            if (empleadoSeleccionadoId == null || empleadoSeleccionadoId.trim().isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(
+                        this,
+                        "No se ha seleccionado un empleado válido para actualizar.",
+                        "Error",
+                        javax.swing.JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            // Crear el DTO del empleado con los datos nuevos
+            EmpleadoDTO empleadoDTO = new EmpleadoDTO(empleadoSeleccionadoId, nombre, cargo, salario);
+
+            int confirmacion = javax.swing.JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Está seguro de que desea actualizar al empleado?",
+                    "Confirmación",
+                    javax.swing.JOptionPane.YES_NO_OPTION,
+                    javax.swing.JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
+                boolean exito = control.actualizarEmpleado(empleadoDTO);
+                if (exito) {
+                    javax.swing.JOptionPane.showMessageDialog(
+                            this,
+                            "Empleado actualizado correctamente.",
+                            "Éxito",
+                            javax.swing.JOptionPane.INFORMATION_MESSAGE
+                    );
+                    llenarTablaEmpleados(); // Actualizar la tabla después de actualizar
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(
+                            this,
+                            "Ocurrió un error al actualizar al empleado. Intente nuevamente.",
+                            "Error",
+                            javax.swing.JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            }
+        }
+
+        // Limpiar los campos después de la operación
+        limpiarCampos();
+    }//GEN-LAST:event_BtnAgregarActualizarEmpleadoActionPerformed
 
     private void BtnRegresarMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRegresarMenu1ActionPerformed
         // Crear una nueva instancia de FrmMenu
@@ -240,6 +467,80 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
 
     private void BtnEliminarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnEliminarEmpleadoActionPerformed
         // TODO add your handling code here:
+
+        // Verificar si los campos están llenos (empleado nuevo)
+        boolean camposLlenos = !TxtfNombreEmpleado.getText().trim().isEmpty() && CBXCargoEmpleado.getSelectedIndex() != 0;
+
+        // Verificar si hay un empleado seleccionado en la tabla
+        boolean empleadoSeleccionado = TableEmpleados.getSelectedRow() != -1;
+
+        if (camposLlenos && !empleadoSeleccionado) {
+            // Caso 1: Campos llenos (empleado nuevo) y no hay selección en la tabla
+            int opcion = javax.swing.JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Está seguro de querer limpiar los campos?",
+                    "Confirmación de limpieza",
+                    javax.swing.JOptionPane.YES_NO_OPTION
+            );
+
+            if (opcion == javax.swing.JOptionPane.YES_OPTION) {
+                limpiarCampos();
+                javax.swing.JOptionPane.showMessageDialog(
+                        this,
+                        "Los campos se han limpiado exitosamente.",
+                        "Campos limpiados",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+        } else if (empleadoSeleccionado) {
+            // Caso 2: Se seleccionó un empleado de la tabla
+            int opcion = javax.swing.JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Está seguro de querer eliminar al empleado seleccionado?",
+                    "Confirmación de eliminación",
+                    javax.swing.JOptionPane.YES_NO_OPTION
+            );
+
+            if (opcion == javax.swing.JOptionPane.YES_OPTION) {
+                boolean exito = control.eliminarEmpleado(empleadoSeleccionadoId);
+
+                if (exito) {
+                    javax.swing.JOptionPane.showMessageDialog(
+                            this,
+                            "Empleado eliminado exitosamente.",
+                            "Éxito",
+                            javax.swing.JOptionPane.INFORMATION_MESSAGE
+                    );
+                    llenarTablaEmpleados();
+
+                    // Después de llenar la tabla, verificar si aún hay selección
+                    if (TableEmpleados.getSelectedRow() == -1) {
+                        // Cambiar a modo "Agregar" si no hay empleados seleccionados
+                        modoAgregar = true;
+                        modoActualizar = false;
+                        BtnAgregarActualizarEmpleado.setText("Agregar");
+                    }
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(
+                            this,
+                            "Ocurrió un error al eliminar al empleado. Intente nuevamente.",
+                            "Error",
+                            javax.swing.JOptionPane.ERROR_MESSAGE
+                    );
+                }
+
+                // Limpiar los campos después de la eliminación
+                limpiarCampos();
+            }
+        } else {
+            // Caso 3: No hay campos llenos ni empleado seleccionado
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "No hay información para eliminar.",
+                    "Aviso",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+            );
+        }
     }//GEN-LAST:event_BtnEliminarEmpleadoActionPerformed
 
     /**
@@ -279,7 +580,7 @@ public class FrmRecursosHumanos extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BtnAgregarEmpleado;
+    private javax.swing.JButton BtnAgregarActualizarEmpleado;
     private javax.swing.JButton BtnEliminarEmpleado;
     private javax.swing.JButton BtnRegresarMenu1;
     private javax.swing.JComboBox<String> CBXCargoEmpleado;

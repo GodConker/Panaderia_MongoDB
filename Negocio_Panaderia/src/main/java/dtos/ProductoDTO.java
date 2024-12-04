@@ -13,9 +13,9 @@ public class ProductoDTO {
     private String nombre;
     private int cantidad;
     private double precio;
-    
-    public ProductoDTO(){
-        
+
+    public ProductoDTO() {
+
     }
 
     // Constructor de la clase ProductoDTO
@@ -49,4 +49,11 @@ public class ProductoDTO {
     public void setPrecio(double precio) {
         this.precio = precio;
     }
+
+    @Override
+    public String toString() {
+        return "ProductoDTO{" + "nombre=" + nombre + ", cantidad=" + cantidad + ", precio=" + precio + '}';
+    }
+
+    
 }

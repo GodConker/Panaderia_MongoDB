@@ -4,8 +4,6 @@
  */
 package daos;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -62,10 +60,14 @@ public class EmpleadoDAO implements IEmpleadoDAO {
 
     // Método auxiliar para convertir Empleado a Document
     private Document convertirAEmpleadoADocumento(Empleado empleado) {
-        return new Document("_id", empleado.getId())
+        Document doc = new Document()
                 .append("nombre", empleado.getNombre())
                 .append("puesto", empleado.getCargo())
                 .append("salario", empleado.getSalario());
+        if (empleado.getId() != null) {
+            doc.append("_id", empleado.getId());
+        }
+        return doc;
     }
 
     @Override
@@ -94,7 +96,7 @@ public class EmpleadoDAO implements IEmpleadoDAO {
             return (doc != null) ? convertirADocumentoAEmpleado(doc) : null;
         } catch (IllegalArgumentException e) {
             System.err.println("ID inválido para Empleado: " + id);
-            return null;
+            return null; // Retorna null si el ID no es válido
         }
     }
 
@@ -125,12 +127,23 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         }
     }
 
+//    @Override
+//    public boolean eliminarEmpleado(int id) {
+//        try {
+//            Document filtro = new Document("_id", new ObjectId(id + ""));
+//            coleccion.deleteOne(filtro);
+//            return true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
     @Override
-    public boolean eliminarEmpleado(int id) {
+    public boolean eliminarEmpleado(String id) {
         try {
-            Document filtro = new Document("_id", new ObjectId(id + ""));
-            coleccion.deleteOne(filtro);
-            return true;
+            ObjectId objectId = new ObjectId(id); // Convertir String a ObjectId
+            Document filtro = new Document("_id", objectId);
+            return coleccion.deleteOne(filtro).getDeletedCount() > 0; // Validar si se eliminó
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -181,6 +194,22 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     }
 
     @Override
+    public List<Empleado> obtenerEmpleados() {
+        return obtenerTodosEmpleados();
+    }
+
+//    @Override
+//    public Empleado obtenerEmpleadoPorID(int id) {
+//        Document doc = coleccion.find(Filters.eq("_id", new ObjectId(id + ""))).first();
+//        return (doc != null) ? convertirADocumentoAEmpleado(doc) : null;
+//    }
+    @Override
+    public Empleado obtenerEmpleadoPorId(ObjectId objectId) {
+        Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
+        return (doc != null) ? convertirADocumentoAEmpleado(doc) : null;
+    }
+
+    @Override
     public List<Empleado> obtenerRepartidores() {
         List<Empleado> repartidores = new ArrayList<>();
         try (MongoCursor<Document> cursor = coleccion.find(Filters.eq("puesto", "Repartidor")).iterator()) {
@@ -207,4 +236,5 @@ public class EmpleadoDAO implements IEmpleadoDAO {
             throw e; // Lanzamos la excepción para que la maneje la capa superior
         }
     }
+
 }

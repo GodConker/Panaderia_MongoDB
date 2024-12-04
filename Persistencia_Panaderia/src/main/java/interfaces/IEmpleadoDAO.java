@@ -6,6 +6,7 @@ package interfaces;
 
 import entidades.Empleado;
 import java.util.List;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -14,14 +15,18 @@ import java.util.List;
 public interface IEmpleadoDAO {
 
     List<Empleado> obtenerTodosEmpleados();
+    
+    List<Empleado> obtenerEmpleados();
 
     Empleado obtenerEmpleadoPorID(int id);
+    
+    Empleado obtenerEmpleadoPorId(ObjectId objectId);
 
     boolean agregarEmpleado(Empleado empleado);
 
     boolean actualizarEmpleado(Empleado empleado);
 
-    boolean eliminarEmpleado(int id);
+    boolean eliminarEmpleado(String id);
 
     List<Empleado> buscarEmpleadosPorNombre(String nombre);
     

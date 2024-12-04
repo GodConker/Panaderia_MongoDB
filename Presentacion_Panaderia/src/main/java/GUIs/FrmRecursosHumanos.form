@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
@@ -92,7 +92,7 @@
                           <EmptySpace min="-2" pref="164" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
-                                  <Component id="BtnAgregarEmpleado" min="-2" pref="99" max="-2" attributes="0"/>
+                                  <Component id="BtnAgregarActualizarEmpleado" min="-2" pref="99" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="BtnEliminarEmpleado" min="-2" pref="100" max="-2" attributes="0"/>
                               </Group>
@@ -139,7 +139,7 @@
                       </Group>
                   </Group>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="BtnAgregarEmpleado" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="BtnAgregarActualizarEmpleado" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="BtnEliminarEmpleado" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -218,12 +218,12 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="TxtfSalarioEmpleadoActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="BtnAgregarEmpleado">
+        <Component class="javax.swing.JButton" name="BtnAgregarActualizarEmpleado">
           <Properties>
             <Property name="text" type="java.lang.String" value="Agregar"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="BtnAgregarEmpleadoActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="BtnAgregarActualizarEmpleadoActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="BtnRegresarMenu1">

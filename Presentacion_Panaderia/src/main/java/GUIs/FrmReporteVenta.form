@@ -54,12 +54,12 @@
                               <Group type="102" attributes="0">
                                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="DPFecha1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="DPFechaHasta" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
                                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="DPFecha" min="-2" max="-2" attributes="0"/>
+                                  <Component id="DPFechaDesde" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
@@ -123,12 +123,12 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="DPFecha" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="DPFechaDesde" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="DPFecha1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="DPFechaHasta" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="BtnGenerarReporte" min="-2" max="-2" attributes="0"/>
@@ -292,9 +292,9 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="BtnExportarPDFActionPerformed"/>
           </Events>
         </Component>
-        <Component class="com.github.lgooddatepicker.components.DatePicker" name="DPFecha">
+        <Component class="com.github.lgooddatepicker.components.DatePicker" name="DPFechaDesde">
         </Component>
-        <Component class="com.github.lgooddatepicker.components.DatePicker" name="DPFecha1">
+        <Component class="com.github.lgooddatepicker.components.DatePicker" name="DPFechaHasta">
         </Component>
       </SubComponents>
     </Container>

@@ -13,7 +13,7 @@ import interfaces.IInventarioDAO;
  */
 public class InventarioBO implements IInventarioBO {
 
-    private IInventarioDAO inventarioDAO;
+    private final IInventarioDAO inventarioDAO;
 
     public InventarioBO(IInventarioDAO inventarioDAO) {
         this.inventarioDAO = inventarioDAO;

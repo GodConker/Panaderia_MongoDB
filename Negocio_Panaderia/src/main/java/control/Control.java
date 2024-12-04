@@ -2,17 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-    package control;
+package control;
 
 import business.objects.EmpleadoBO;
 import business.objects.EntregaBO;
 import business.objects.InventarioBO;
+import business.objects.ProductoBO;
 import business.objects.TiendaBO;
 import convertidores.EmpleadoConvertidor;
 import convertidores.TiendaConvertidor;
 import daos.EmpleadoDAO;
 import daos.EntregaDAO;
 import daos.InventarioDAO;
+import daos.ProductoDAO;
 import daos.TiendaDAO;
 import dtos.EmpleadoDTO;
 import dtos.EntregaDTO;
@@ -25,6 +27,7 @@ import entidades.Tienda;
 import interfaces.IEmpleadoDAO;
 import interfaces.IEntregaDAO;
 import interfaces.IInventarioDAO;
+import interfaces.IProductoDAO;
 import interfaces.ITiendaDAO;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -35,6 +38,8 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.swing.JOptionPane;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -46,6 +51,7 @@ public class Control {
     private final EntregaBO entregaBO;   // Instancia de EntregaBO
     private final InventarioBO inventarioBO;
     private final TiendaBO tiendaBO;
+    private final ProductoBO productoBO;
 
     public Control() {
         // Instanciar DAOs
@@ -53,12 +59,31 @@ public class Control {
         IEntregaDAO entregaDAO = new EntregaDAO();
         IInventarioDAO inventarioDAO = new InventarioDAO();
         ITiendaDAO tiendaDAO = new TiendaDAO();
+        IProductoDAO productoDAO = new ProductoDAO();
 
         // Instanciar BOs con los DAOs
         this.empleadoBO = new EmpleadoBO(empleadoDAO);
         this.entregaBO = new EntregaBO(entregaDAO, inventarioDAO);
         this.inventarioBO = new InventarioBO(inventarioDAO);
         this.tiendaBO = new TiendaBO(tiendaDAO);
+        this.productoBO = new ProductoBO((ProductoDAO) productoDAO);
+    }
+
+    public List<ProductoDTO> obtenerProductos() {
+        List<Producto> productos = productoBO.obtenerTodosProductos(); // Obtienes los productos
+        List<ProductoDTO> productosDTO = new ArrayList<>();
+
+        // Convierte los productos a ProductoDTO
+        for (Producto producto : productos) {
+            ProductoDTO dto = new ProductoDTO();
+            dto.setNombre(producto.getNombre());
+            dto.setPrecio(producto.getPrecio());
+            // Obtén la cantidad desde InventarioBO (usando el método correcto)
+            dto.setCantidad(inventarioBO.obtenerCantidadDisponible(producto.getIdAsString())); // Cambiar el método aquí
+            productosDTO.add(dto);
+        }
+
+        return productosDTO;
     }
 
     public List<EmpleadoDTO> obtenerRepartidores() {
@@ -231,16 +256,21 @@ public class Control {
                     productoDTO.setNombre(producto.getNombre());
                     productoDTO.setPrecio(producto.getPrecio());
                     productosDTO.add(productoDTO);
-                    cantidades.add(entrega.getCantidades().get(i)); 
+                    cantidades.add(entrega.getCantidades().get(i));
                 }
                 dto.setProductos(productosDTO);
-                dto.setCantidades(cantidades); 
+                dto.setCantidades(cantidades);
 
                 if (entrega.getTienda() != null) {
-                    TiendaDTO tiendaDTO = new TiendaDTO();
-                    tiendaDTO.setId(entrega.getTienda().getId());  // El ID ya es un String
-                    tiendaDTO.setNombre(entrega.getTienda().getNombre());
-                    dto.setIdTienda(tiendaDTO.getId());
+                    String idTienda = entrega.getTienda().getId();
+                    if (idTienda != null) {
+                        dto.setIdTienda(idTienda);
+                        System.out.println("Asignando ID Tienda al DTO: " + idTienda);
+                    } else {
+                        System.out.println("El ID de la tienda en Entrega es nulo.");
+                    }
+                } else {
+                    System.out.println("La tienda en Entrega es nula.");
                 }
 
                 if (entrega.getRepartidor() != null) {
@@ -273,5 +303,90 @@ public class Control {
         // Suponiendo que TiendaBO tiene un método para obtener una tienda por ID
         Tienda tienda = tiendaBO.obtenerTiendaPorID(idTienda);
         return tienda != null ? tienda.getNombre() : "Tienda no encontrada";
+    }
+
+    public boolean actualizarEmpleado(EmpleadoDTO empleadoDTO) {
+        try {
+            // Verificar si el ID del empleado está presente y no es vacío
+            String idEmpleado = empleadoDTO.getId();
+            if (idEmpleado == null || idEmpleado.trim().isEmpty()) {
+                throw new IllegalArgumentException("El ID del empleado no puede ser null o vacío.");
+            }
+
+            // Crear ObjectId a partir del ID
+            ObjectId objectId = new ObjectId(idEmpleado);
+
+            // Obtener el empleado desde la base de datos usando el ID
+            Empleado empleado = empleadoBO.obtenerEmpleadoPorId(objectId);
+
+            if (empleado == null) {
+                throw new RuntimeException("No se encontró un empleado con el ID: " + idEmpleado);
+            }
+
+            // Conservar el ID del empleado y solo actualizar los campos permitidos
+            empleado.setNombre(empleadoDTO.getNombre());  // Actualizar nombre
+            empleado.setCargo(empleadoDTO.getCargo());    // Actualizar cargo
+            empleado.setSalario(empleadoDTO.getSalario()); // Actualizar salario
+
+            // Llamar a la lógica del BO para actualizar el empleado
+            boolean resultado = empleadoBO.actualizarEmpleado(empleado);
+
+            return resultado;
+        } catch (Exception e) {
+            // Capturar cualquier error y lanzarlo como RuntimeException
+            throw new RuntimeException("Error al actualizar el empleado: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean eliminarEmpleado(String idEmpleado) {
+        try {
+            if (idEmpleado == null || idEmpleado.trim().isEmpty()) {
+                throw new IllegalArgumentException("El ID del empleado no puede ser null o vacío.");
+            }
+            return empleadoBO.eliminarEmpleado(idEmpleado);
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.err.println("Error al eliminar el empleado: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean agregarEmpleado(EmpleadoDTO empleadoDTO) {
+        try {
+            Empleado empleado = new Empleado();
+            empleado.setNombre(empleadoDTO.getNombre());
+            empleado.setCargo(empleadoDTO.getCargo());
+            empleado.setSalario(empleadoDTO.getSalario());
+
+            // Llamar a la lógica del BO
+            boolean resultado = empleadoBO.agregarEmpleado(empleado);
+            if (resultado) {
+                JOptionPane.showMessageDialog(null, "Empleado agregado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            }
+            return resultado;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al agregar empleado: " + e.getMessage(), e);
+        }
+    }
+
+    // Obtener todos los empleados (Repartidores, Cajeros y Panaderos)
+    public List<EmpleadoDTO> obtenerEmpleados() {
+        try {
+            List<Empleado> empleados = empleadoBO.obtenerEmpleados();
+            List<EmpleadoDTO> empleadosDTO = new ArrayList<>();
+            for (Empleado empleado : empleados) {
+                EmpleadoDTO dto = new EmpleadoDTO();
+                dto.setId(empleado.getIdAsString());
+                dto.setNombre(empleado.getNombre());
+                dto.setCargo(empleado.getCargo());
+                dto.setSalario(empleado.getSalario());
+                empleadosDTO.add(dto);
+            }
+            return empleadosDTO;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener los empleados: " + e.getMessage(), e);
+        }
     }
 }

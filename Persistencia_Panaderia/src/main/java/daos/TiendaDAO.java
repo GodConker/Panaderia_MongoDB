@@ -33,17 +33,10 @@ public class TiendaDAO implements ITiendaDAO {
     @Override
     public List<Tienda> obtenerTodasLasTiendas() {
         List<Tienda> tiendas = new ArrayList<>();
-        // Consultamos todos los documentos en la colección
         try (MongoCursor<Document> cursor = coleccion.find().iterator()) {
             while (cursor.hasNext()) {
                 Document doc = cursor.next();
-                Tienda tienda = new Tienda(
-                        doc.getString("idTienda"), // idTienda
-                        doc.getString("nombre"),
-                        doc.getString("ubicacionCoordenadas"),
-                        doc.getString("telefono"),
-                        doc.getString("direccion")
-                );
+                Tienda tienda = convertirDocumentoATienda(doc);
                 tiendas.add(tienda);
             }
         }
@@ -51,57 +44,26 @@ public class TiendaDAO implements ITiendaDAO {
     }
 
     @Override
-    public Tienda obtenerTiendaPorID(int id) {
-        // Filtramos por el idTienda
-        Document doc = coleccion.find(Filters.eq("idTienda", id)).first();
-        if (doc != null) {
-            return new Tienda(
-                    doc.getString("idTienda"),
-                    doc.getString("nombre"),
-                    doc.getString("ubicacionCoordenadas"),
-                    doc.getString("telefono"),
-                    doc.getString("direccion")
-            );
-        }
-        return null; // Tienda no encontrada
-    }
-
-    @Override
     public Tienda obtenerTiendaPorID(String id) {
         try {
-            // Verificar si el id es válido
-            if (ObjectId.isValid(id)) {
-                ObjectId objectId = new ObjectId(id); // Convertir String a ObjectId
-                Document doc = coleccion.find(Filters.eq("_id", objectId)).first(); // Buscar por _id
-                if (doc != null) {
-                    return new Tienda(
-                            doc.getString("_id"), // Obtener el ID como String
-                            doc.getString("nombre"),
-                            doc.getString("ubicacionCoordenadas"),
-                            doc.getString("telefono"),
-                            doc.getString("direccion")
-                    );
-                } else {
-                    System.err.println("Tienda no encontrada para el ID: " + id);
-                }
+            Document doc = coleccion.find(Filters.eq("_id", id)).first(); // Buscar directamente por el ID (String)
+
+            if (doc != null) {
+                return convertirDocumentoATienda(doc);
             } else {
-                System.err.println("ID inválido para Tienda: " + id);
+                System.err.println("Tienda no encontrada para el ID: " + id);
             }
         } catch (Exception e) {
-            System.err.println("Error al obtener la Tienda: " + e.getMessage());
+            System.err.println("Error al obtener la Tienda por ID: " + e.getMessage());
         }
-        return null; // Si no se encuentra la tienda o hay un error
+        return null;
     }
 
     @Override
     public boolean agregarTienda(Tienda tienda) {
         try {
             // Convertir Tienda a Document para insertarla
-            Document doc = new Document("idTienda", tienda.getId())
-                    .append("nombre", tienda.getNombre())
-                    .append("ubicacionCoordenadas", tienda.getUbicacionCoordenadas())
-                    .append("telefono", tienda.getTelefono())
-                    .append("direccion", tienda.getDireccion());
+            Document doc = convertirTiendaADocumento(tienda);
             coleccion.insertOne(doc);
             return true;
         } catch (Exception e) {
@@ -113,12 +75,10 @@ public class TiendaDAO implements ITiendaDAO {
     @Override
     public boolean actualizarTienda(Tienda tienda) {
         try {
-            // Filtramos por idTienda y actualizamos los datos de la tienda
-            Document filtro = new Document("idTienda", tienda.getId());
-            Document actualizacion = new Document("$set", new Document("nombre", tienda.getNombre())
-                    .append("ubicacionCoordenadas", tienda.getUbicacionCoordenadas())
-                    .append("telefono", tienda.getTelefono())
-                    .append("direccion", tienda.getDireccion()));
+            // Filtramos por _id y actualizamos los datos de la tienda
+            ObjectId objectId = new ObjectId(tienda.getId());
+            Document filtro = new Document("_id", objectId);
+            Document actualizacion = new Document("$set", convertirTiendaADocumento(tienda));
             coleccion.updateOne(filtro, actualizacion);
             return true;
         } catch (Exception e) {
@@ -128,10 +88,10 @@ public class TiendaDAO implements ITiendaDAO {
     }
 
     @Override
-    public boolean eliminarTienda(int id) {
+    public boolean eliminarTienda(String id) {
         try {
-            // Filtramos por idTienda y la eliminamos
-            Document filtro = new Document("idTienda", id);
+            ObjectId objectId = new ObjectId(id);
+            Document filtro = new Document("_id", objectId);
             coleccion.deleteOne(filtro);
             return true;
         } catch (Exception e) {
@@ -143,17 +103,10 @@ public class TiendaDAO implements ITiendaDAO {
     @Override
     public List<Tienda> buscarTiendasPorNombre(String nombre) {
         List<Tienda> tiendas = new ArrayList<>();
-        // Filtramos tiendas cuyo nombre contenga la palabra clave
         try (MongoCursor<Document> cursor = coleccion.find(Filters.regex("nombre", nombre, "i")).iterator()) {
             while (cursor.hasNext()) {
                 Document doc = cursor.next();
-                Tienda tienda = new Tienda(
-                        doc.getString("_id"), // Corrige el campo del ObjectId
-                        doc.getString("nombre"),
-                        doc.getString("ubicacionCoordenadas"),
-                        doc.getString("telefono"),
-                        doc.getString("direccion")
-                );
+                Tienda tienda = convertirDocumentoATienda(doc);
                 tiendas.add(tienda);
             }
         }
@@ -163,26 +116,32 @@ public class TiendaDAO implements ITiendaDAO {
     @Override
     public Tienda buscarTiendaPorNombre(String nombre) {
         try {
-            // Filtramos por nombre exacto (ignorando mayúsculas/minúsculas)
-            Document doc = coleccion.find(Filters.regex("nombre", "^" + nombre + "$", "i")).first();
+            Document doc = coleccion.find(Filters.regex("nombre", "^" + nombre + "$", "i")).first(); // Búsqueda por nombre (insensible a mayúsculas/minúsculas)
 
             if (doc != null) {
-                // Obtener el ID como ObjectId y convertirlo a String
-                String idAsString = doc.getObjectId("_id").toString();  // Convertir ObjectId a String
-
-                // Crear y retornar la tienda con los datos obtenidos
-                return new Tienda(
-                        idAsString, // Ahora el ID es un String
-                        doc.getString("nombre"),
-                        doc.getString("ubicacionCoordenadas"),
-                        doc.getString("telefono"),
-                        doc.getString("direccion")
-                );
+                return convertirDocumentoATienda(doc);
             }
         } catch (Exception e) {
             System.err.println("Error al buscar la tienda por nombre: " + e.getMessage());
         }
+        return null;
+    }
 
-        return null; // Si no se encuentra la tienda
+    private Tienda convertirDocumentoATienda(Document doc) {
+        return new Tienda(
+                doc.getString("_id"), // Obtener el ID como String
+                doc.getString("nombre"),
+                doc.getString("ubicacionCoordenadas"),
+                doc.getString("telefono"),
+                doc.getString("direccion")
+        );
+    }
+
+    private Document convertirTiendaADocumento(Tienda tienda) {
+        return new Document("_id", tienda.getId()) // Usar el ID directamente como String
+                .append("nombre", tienda.getNombre())
+                .append("ubicacionCoordenadas", tienda.getUbicacionCoordenadas())
+                .append("telefono", tienda.getTelefono())
+                .append("direccion", tienda.getDireccion());
     }
 }

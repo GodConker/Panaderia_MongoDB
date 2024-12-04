@@ -45,55 +45,62 @@ public class EntregaDAO implements IEntregaDAO {
     // Método auxiliar para convertir un Document a Entrega
     private Entrega convertirADocumentoAEntrega(Document doc) {
         Entrega entrega = new Entrega();
-        entrega.setId(doc.getObjectId("_id"));
-        entrega.setFechaEntrega(doc.getDate("fechaEntrega"));
-        entrega.setMontoTotal(doc.getDouble("montoTotal"));
+        try {
+            // Asignar datos básicos
+            entrega.setId(doc.getObjectId("_id"));
+            entrega.setFechaEntrega(doc.getDate("fechaEntrega"));
+            entrega.setMontoTotal(doc.getDouble("montoTotal"));
 
-        // Manejar productos
-        List<Document> productosDocs = doc.getList("productos", Document.class);
-        List<Producto> productos = new ArrayList<>();
-        List<Integer> cantidades = new ArrayList<>();
-        List<Double> precios = new ArrayList<>();
+            // Manejar productos
+            List<Document> productosDocs = doc.getList("productos", Document.class);
+            List<Producto> productos = new ArrayList<>();
+            List<Integer> cantidades = new ArrayList<>();
+            List<Double> precios = new ArrayList<>();
 
-        if (productosDocs != null) {
-            for (Document productoDoc : productosDocs) {
-                Producto producto = new Producto();
-                producto.setNombre(productoDoc.getString("nombre"));
-                producto.setPrecio(productoDoc.containsKey("precio") ? productoDoc.getDouble("precio") : 0.0);
-                productos.add(producto);
-                cantidades.add(productoDoc.getInteger("cantidad", 0));  // Agregar la cantidad correspondiente
-                precios.add(productoDoc.containsKey("precio") ? productoDoc.getDouble("precio") : 0.0);  // Agregar el precio
+            if (productosDocs != null) {
+                for (Document productoDoc : productosDocs) {
+                    Producto producto = new Producto();
+                    producto.setNombre(productoDoc.getString("nombre"));
+                    producto.setPrecio(productoDoc.containsKey("precio") ? productoDoc.getDouble("precio") : 0.0);
+                    productos.add(producto);
+                    cantidades.add(productoDoc.getInteger("cantidad", 0));  // Agregar la cantidad correspondiente
+                    precios.add(productoDoc.containsKey("precio") ? productoDoc.getDouble("precio") : 0.0);  // Agregar el precio
+                }
             }
-        }
 
-        entrega.setProductos(productos);
-        entrega.setCantidades(cantidades);
-        entrega.setPrecios(precios);
+            entrega.setProductos(productos);
+            entrega.setCantidades(cantidades);
+            entrega.setPrecios(precios);
 
-        // Recuperar tienda
-        String tiendaId = doc.getString("tienda");
-        if (tiendaId != null) {
-            TiendaDAO tiendaDAO = new TiendaDAO();
-            Tienda tienda = tiendaDAO.obtenerTiendaPorID(tiendaId);  // Asegúrate de que esto esté buscando bien por el ID.
-            if (tienda != null) {
-                entrega.setTienda(tienda);  // Si encuentra la tienda, la asigna
+            // Recuperar tienda
+            String tiendaId = doc.getString("tienda"); // Obtener el ID de la tienda como String
+            if (tiendaId != null) {
+                TiendaDAO tiendaDAO = new TiendaDAO();
+                Tienda tienda = tiendaDAO.obtenerTiendaPorID(tiendaId); // Buscar la tienda usando el ID como String
+                if (tienda != null) {
+                    entrega.setTienda(tienda);
+                } else {
+                    System.err.println("Tienda no encontrada para el ID: " + tiendaId);
+                }
+            }
+
+            // Recuperar repartidor
+            String repartidorId = doc.getString("repartidor");
+            if (repartidorId != null && !repartidorId.isEmpty()) {
+                EmpleadoDAO empleadoDAO = new EmpleadoDAO();
+                Empleado repartidor = empleadoDAO.obtenerEmpleadoPorID(repartidorId);
+                if (repartidor != null) {
+                    entrega.setRepartidor(repartidor);
+                } else {
+                    System.err.println("Repartidor no encontrado para el ID: " + repartidorId);
+                }
             } else {
-                System.err.println("Tienda no encontrada para el ID: " + tiendaId);  // Si no encuentra la tienda
+                System.err.println("El campo 'repartidor' está vacío o es nulo en el documento.");
             }
-        }
 
-        // Recuperar repartidor
-        String repartidorId = doc.getString("repartidor");
-        if (repartidorId != null) {
-            EmpleadoDAO empleadoDAO = new EmpleadoDAO();
-            Empleado repartidor = empleadoDAO.obtenerEmpleadoPorID(repartidorId);
-            if (repartidor != null) {
-                entrega.setRepartidor(repartidor);
-            } else {
-                System.err.println("Repartidor no encontrado para el ID: " + repartidorId);
-            }
+        } catch (Exception e) {
+            System.err.println("Error al convertir el documento a Entrega: " + e.getMessage());
         }
-
         return entrega;
     }
 
