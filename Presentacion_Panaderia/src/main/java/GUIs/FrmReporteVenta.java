@@ -361,12 +361,15 @@ public class FrmReporteVenta extends javax.swing.JFrame {
             // Título del reporte
             document.add(new Paragraph("Reporte de Entregas\n\n"));
 
-            // Crear la tabla con cuatro columnas
-            PdfPTable table = new PdfPTable(4); // Tienda, Productos, Cantidades, Total
+            // Crear la tabla con cuatro columnas: Tienda, Productos, Cantidades, Total
+            PdfPTable table = new PdfPTable(4);
             table.addCell("Tienda");
             table.addCell("Productos");
-            table.addCell("Cantidades");
+            table.addCell("Cantidad (Paquetes)");
             table.addCell("Total");
+
+            // Variable para acumular el monto total
+            double montoTotalGeneral = 0.0;
 
             // Recorrer las entregas y agregar los datos a la tabla
             for (EntregaDTO entrega : entregas) {
@@ -376,25 +379,23 @@ public class FrmReporteVenta extends javax.swing.JFrame {
                 // Crear la lista de productos y cantidades
                 String productosString = String.join(", ",
                         entrega.getProductos().stream().map(ProductoDTO::getNombre).toList());
-                String cantidadesString = entrega.getProductos().stream()
-                        .map(producto -> {
-                            // Depurar la cantidad de cada producto
-                            System.out.println("Producto: " + producto.getNombre() + ", Cantidad: " + producto.getCantidad());
-                            return String.valueOf(producto.getCantidad());
-                        })
-                        .collect(Collectors.joining(", "));
-
-                System.out.println("Cantidades generadas para el PDF: " + cantidadesString);  // Verificar el string resultante
+                String cantidadesString = entrega.getCantidades().toString(); // Aquí usamos el mismo campo que la tabla
 
                 // Añadir los datos a la tabla
                 table.addCell(nombreTienda); // Nombre de la tienda
                 table.addCell(productosString); // Lista de productos
-                table.addCell(cantidadesString); // Lista de cantidades
+                table.addCell(cantidadesString); // Lista de cantidades (ya como string)
                 table.addCell(String.format("%.2f", entrega.getMontoTotal())); // Total de la entrega
+
+                // Acumular el total de la entrega
+                montoTotalGeneral += entrega.getMontoTotal();
             }
 
             // Agregar la tabla al documento
             document.add(table);
+
+            // Agregar el total general al final del reporte
+            document.add(new Paragraph("\nTotal General: $" + String.format("%.2f", montoTotalGeneral)));
 
             JOptionPane.showMessageDialog(this, "Reporte exportado exitosamente.");
         } catch (Exception e) {
