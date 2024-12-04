@@ -9,21 +9,21 @@ public class EmpleadoDTO {
     private String id;  // Usamos String en lugar de ObjectId
     private int idEmpleado;
     private String nombre;
-    private String cargo;
+    private String puesto;
     private Double salario;  // Tipo Double para alinearse con la clase Empleado
 
     // Constructor con parámetros
-    public EmpleadoDTO(String nombre, String cargo, Double salario) {
+    public EmpleadoDTO(String nombre, String puesto, Double salario) {
         this.nombre = nombre;
-        this.cargo = cargo;
+        this.puesto = puesto;
         this.salario = salario;
     }
 
-    public EmpleadoDTO(String id, int idEmpleado, String nombre, String cargo, Double salario) {
+    public EmpleadoDTO(String id, /*int idEmpleado,*/ String nombre, String puesto, Double salario) {
         this.id = id;
-        this.idEmpleado = idEmpleado;
+        /*this.idEmpleado = idEmpleado;*/
         this.nombre = nombre;
-        this.cargo = cargo;
+        this.puesto = puesto;
         this.salario = salario;
     }
 
@@ -60,12 +60,12 @@ public class EmpleadoDTO {
         this.nombre = nombre;
     }
 
-    public String getCargo() {
-        return cargo;
+    public String getPuesto() {
+        return puesto;
     }
 
-    public void setCargo(String cargo) {
-        this.cargo = cargo;
+    public void setPuesto(String cargo) {
+        this.puesto = cargo;
     }
 
     public Double getSalario() {
@@ -81,7 +81,7 @@ public class EmpleadoDTO {
         return "EmpleadoDTO{"
                 + "id='" + id + '\''
                 + ", nombre='" + nombre + '\''
-                + ", cargo='" + cargo + '\''
+                + ", puesto='" + puesto + '\''
                 + ", salario=" + salario
                 + '}';
     }

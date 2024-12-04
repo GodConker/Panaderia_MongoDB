@@ -56,7 +56,7 @@ public class Control {
                 EmpleadoDTO dto = new EmpleadoDTO();
                 dto.setId(empleado.getIdAsString());
                 dto.setNombre(empleado.getNombre());
-                dto.setCargo(empleado.getCargo());
+                dto.setPuesto(empleado.getPuesto());
                 dto.setSalario(empleado.getSalario());
                 empleadosDTO.add(dto);
             }
@@ -70,7 +70,7 @@ public class Control {
         try {
             Empleado empleado = new Empleado();
             empleado.setNombre(empleadoDTO.getNombre());
-            empleado.setCargo(empleadoDTO.getCargo());
+            empleado.setPuesto(empleadoDTO.getPuesto());
             empleado.setSalario(empleadoDTO.getSalario());
 
             // Llamar a la lógica del BO
@@ -96,7 +96,7 @@ public class Control {
             EmpleadoDTO dto = new EmpleadoDTO();
             dto.setId(empleado.getId().toString());
             dto.setNombre(empleado.getNombre());
-            dto.setCargo(empleado.getCargo());
+            dto.setPuesto(empleado.getPuesto());
             dto.setSalario(empleado.getSalario());
             return dto;
         } catch (Exception e) {
@@ -110,11 +110,11 @@ public class Control {
             List<Empleado> empleados = empleadoBO.obtenerEmpleados();
             List<EmpleadoDTO> repartidores = new ArrayList<>();
             for (Empleado empleado : empleados) {
-                if ("Repartidor".equals(empleado.getCargo())) {
+                if ("Repartidor".equals(empleado.getPuesto())) {
                     EmpleadoDTO dto = new EmpleadoDTO();
                     dto.setId(empleado.getId().toString());
                     dto.setNombre(empleado.getNombre());
-                    dto.setCargo(empleado.getCargo());
+                    dto.setPuesto(empleado.getPuesto());
                     dto.setSalario(empleado.getSalario());
                     repartidores.add(dto);
                 }
@@ -162,5 +162,64 @@ public class Control {
 
     public int calcularPaquetesDisponibles(String idProducto) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public boolean actualizarEmpleado(EmpleadoDTO empleadoDTO) {
+        try {
+            // Verificar si el ID del empleado está presente y no es vacío
+            String idEmpleado = empleadoDTO.getId();
+            if (idEmpleado == null || idEmpleado.trim().isEmpty()) {
+                throw new IllegalArgumentException("El ID del empleado no puede ser null o vacío.");
+            }
+
+            // Crear ObjectId a partir del ID
+            ObjectId objectId = new ObjectId(idEmpleado);
+
+            // Obtener el empleado desde la base de datos usando el ID
+            Empleado empleado = empleadoBO.obtenerEmpleadoPorId(objectId);
+
+            if (empleado == null) {
+                throw new RuntimeException("No se encontró un empleado con el ID: " + idEmpleado);
+            }
+
+            // Conservar el ID del empleado y solo actualizar los campos permitidos
+            empleado.setNombre(empleadoDTO.getNombre());  // Actualizar nombre
+            empleado.setPuesto(empleadoDTO.getPuesto());    // Actualizar cargo
+            empleado.setSalario(empleadoDTO.getSalario()); // Actualizar salario
+
+            // Llamar a la lógica del BO para actualizar el empleado
+            boolean resultado = empleadoBO.actualizarEmpleado(empleado);
+
+            return resultado;
+        } catch (Exception e) {
+            // Capturar cualquier error y lanzarlo como RuntimeException
+            throw new RuntimeException("Error al actualizar el empleado: " + e.getMessage(), e);
+        }
+    }
+    
+    public boolean eliminarEmpleado(String idEmpleado) {
+        try {
+            if (idEmpleado == null || idEmpleado.trim().isEmpty()) {
+                throw new IllegalArgumentException("El ID del empleado no puede ser null o vacío.");
+            }
+
+            // Crear ObjectId a partir del ID
+            ObjectId objectId = new ObjectId(idEmpleado);
+
+            // Obtener el empleado desde la base de datos usando el ID
+            Empleado empleado = empleadoBO.obtenerEmpleadoPorId(objectId);
+
+            if (empleado == null) {
+                throw new RuntimeException("No se encontró un empleado con el ID: " + idEmpleado);
+            }
+            
+            System.out.println(idEmpleado);
+            boolean resultado = empleadoBO.eliminarEmpleado(idEmpleado);
+            System.out.println(resultado);
+            
+            return resultado;
+        }catch (Exception e) {
+            throw new RuntimeException("Error al eliminar el empleado: " + e.getMessage(), e);
+        }
     }
 }

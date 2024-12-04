@@ -22,7 +22,7 @@ public interface IEmpleadoDAO {
 
     boolean actualizarEmpleado(Empleado empleado);
 
-    boolean eliminarEmpleado(int id);
+    boolean eliminarEmpleado(String id);
 
     List<Empleado> buscarEmpleadosPorNombre(String nombre);
     

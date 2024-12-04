@@ -20,7 +20,7 @@ public class Empleado implements Serializable {
     private ObjectId id;
      private int idEmpleado;
     private String nombre;
-    private String cargo;
+    private String puesto;
     private Double salario;
 
     // Constructor vacío
@@ -28,17 +28,17 @@ public class Empleado implements Serializable {
     }
 
     // Constructor con parámetros
-    public Empleado(ObjectId id, String nombre, String cargo, Double salario) {
+    public Empleado(ObjectId id, String nombre, String puesto, Double salario) {
         this.id = id;
         this.nombre = nombre;
-        this.cargo = cargo;
+        this.puesto = puesto;
         this.salario = salario;
     }
 
     // Constructor sin ID (puede usarse cuando el ID se genera automáticamente)
-    public Empleado(String nombre, String cargo, Double salario) {
+    public Empleado(String nombre, String puesto, Double salario) {
         this.nombre = nombre;
-        this.cargo = cargo;
+        this.puesto = puesto;
         this.salario = salario;
     }
 
@@ -76,12 +76,12 @@ public class Empleado implements Serializable {
         this.nombre = nombre;
     }
 
-    public String getCargo() {
-        return cargo;
+    public String getPuesto() {
+        return puesto;
     }
 
-    public void setCargo(String cargo) {
-        this.cargo = cargo;
+    public void setPuesto(String cargo) {
+        this.puesto = cargo;
     }
 
     public Double getSalario() {

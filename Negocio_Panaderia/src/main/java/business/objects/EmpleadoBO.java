@@ -55,4 +55,23 @@ public class EmpleadoBO {
             throw new RuntimeException("Error al agregar el empleado: " + e.getMessage(), e);
         }
     }
+
+    public boolean actualizarEmpleado(Empleado empleado) {
+        try {
+            // Llamar al DAO para realizar la actualización en la base de datos
+            return empleadoDAO.actualizarEmpleado(empleado);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al actualizar el empleado: " + e.getMessage(), e);
+        }
+    }
+    
+    public boolean eliminarEmpleado(String id) {
+        try {
+            // Llamar al DAO para eliminar el empleado en la base de datos
+            return empleadoDAO.eliminarEmpleado(id);
+        } catch(Exception e) {
+            throw new RuntimeException("Error a eliminar el empleado: " + e.getMessage(), e);
+        }
+    }
+
 }

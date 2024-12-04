@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package daos;
 
 import com.mongodb.client.MongoClient;
@@ -19,22 +15,16 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Clase DAO para manejar las operaciones CRUD de la entidad 'Empleado' con
- * MongoDB.
- */
 public class EmpleadoDAO implements IEmpleadoDAO {
 
     private final MongoCollection<Document> coleccion;
 
     public EmpleadoDAO() {
-        // Establecer la conexión directamente dentro del constructor con la nueva forma de crear MongoClient
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");  // Usando MongoClients.create()
-        MongoDatabase baseDatos = mongoClient.getDatabase("panaderia"); // Nombre de la base de datos
-        this.coleccion = baseDatos.getCollection("empleado"); // Obtener la colección "empleados"
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase baseDatos = mongoClient.getDatabase("panaderia");
+        this.coleccion = baseDatos.getCollection("empleado");
     }
 
-    // Constructor con base de datos ya establecida
     public EmpleadoDAO(MongoDatabase baseDatos) {
         this.coleccion = baseDatos.getCollection("empleado");
     }
@@ -44,7 +34,6 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         Object salarioObj = doc.get("salario");
         Double salario = null;
 
-        // Verificar el tipo de dato y convertirlo a Double si es necesario
         if (salarioObj instanceof Integer) {
             salario = ((Integer) salarioObj).doubleValue();
         } else if (salarioObj instanceof Double) {
@@ -52,10 +41,10 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         }
 
         return new Empleado(
-                doc.getObjectId("_id"), // ID de empleado
-                doc.getString("nombre"), // Nombre del empleado
-                doc.getString("puesto"), // Puesto del empleado
-                salario // Salario del empleado
+                doc.getObjectId("_id"),
+                doc.getString("nombre"),
+                doc.getString("puesto"),
+                salario
         );
     }
 
@@ -63,7 +52,7 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     private Document convertirAEmpleadoADocumento(Empleado empleado) {
         return new Document("_id", empleado.getId())
                 .append("nombre", empleado.getNombre())
-                .append("puesto", empleado.getCargo())
+                .append("puesto", empleado.getPuesto())
                 .append("salario", empleado.getSalario());
     }
 
@@ -88,6 +77,10 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     @Override
     public boolean agregarEmpleado(Empleado empleado) {
         try {
+            // Si el empleado no tiene un ID, se crea un nuevo ObjectId
+            if (empleado.getId() == null) {
+                empleado.setId(new ObjectId());
+            }
             Document doc = convertirAEmpleadoADocumento(empleado);
             coleccion.insertOne(doc);
             return true;
@@ -100,9 +93,10 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     @Override
     public boolean actualizarEmpleado(Empleado empleado) {
         try {
+            // Filtrar por nombre del empleado
             Document filtro = new Document("_id", empleado.getId());
             Document actualizacion = new Document("$set", new Document("nombre", empleado.getNombre())
-                    .append("puesto", empleado.getCargo())
+                    .append("puesto", empleado.getPuesto())
                     .append("salario", empleado.getSalario()));
             coleccion.updateOne(filtro, actualizacion);
             return true;
@@ -113,9 +107,10 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     }
 
     @Override
-    public boolean eliminarEmpleado(int id) {
+    public boolean eliminarEmpleado(String id) {
         try {
-            Document filtro = new Document("_id", new ObjectId(id + ""));
+            ObjectId objectId = new ObjectId(id);
+            Document filtro = new Document("_id", objectId);
             coleccion.deleteOne(filtro);
             return true;
         } catch (Exception e) {
@@ -138,64 +133,44 @@ public class EmpleadoDAO implements IEmpleadoDAO {
 
     @Override
     public Empleado buscarPorId(String idRepartidor) {
-        // Convertimos la cadena 'idRepartidor' a ObjectId, ya que MongoDB usa ObjectId como identificador
         ObjectId objectId = new ObjectId(idRepartidor);
-
-        // Buscar el empleado por su ObjectId
         Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
-
-        // Si encontramos el documento, lo convertimos a Empleado
-        if (doc != null) {
-            return convertirADocumentoAEmpleado(doc);
-        } else {
-            // Si no se encuentra el empleado, retornamos null
-            return null;
-        }
+        return (doc != null) ? convertirADocumentoAEmpleado(doc) : null;
     }
 
     @Override
     public Empleado obtenerEmpleadoPorId(ObjectId objectId) {
-        // Buscar el empleado por su ObjectId
         Document doc = coleccion.find(Filters.eq("_id", objectId)).first();
-
-        // Si encontramos el documento, lo convertimos a Empleado
         return (doc != null) ? convertirADocumentoAEmpleado(doc) : null;
     }
 
     @Override
     public List<Empleado> obtenerEmpleados() {
-        return obtenerTodosEmpleados(); // Método que retorna todos los empleados
+        return obtenerTodosEmpleados();
     }
 
-    // Método agregado para agregar un EmpleadoDTO
+    // Método para agregar un EmpleadoDTO
     public void agregarEmpleadoDTO(EmpleadoDTO empleadoDTO) {
         try {
-            // Crear un Empleado usando el DTO
             Empleado empleado = new Empleado(
                     new ObjectId(), // Nuevo ObjectId para el empleado
                     empleadoDTO.getNombre(),
-                    empleadoDTO.getCargo(),
+                    empleadoDTO.getPuesto(),
                     empleadoDTO.getSalario()
             );
-
-            // Insertar el Empleado en la base de datos
             Document doc = convertirAEmpleadoADocumento(empleado);
             coleccion.insertOne(doc);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public Empleado buscarPorId(int idEmpleado) {
-        // Buscar el empleado por su idEmpleado (no por _id)
         Document doc = coleccion.find(Filters.eq("idEmpleado", idEmpleado)).first();
-
-        // Si encontramos el documento, lo convertimos a Empleado
         if (doc != null) {
-            return convertirADocumentoAEmpleado(doc);  // Método que convierte el Document a un objeto Empleado
+            return convertirADocumentoAEmpleado(doc);
         } else {
-            // Si no se encuentra el empleado, retornamos null
             return null;
         }
     }

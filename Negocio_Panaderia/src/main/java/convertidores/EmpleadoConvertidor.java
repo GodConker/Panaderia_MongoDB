@@ -14,7 +14,7 @@ public class EmpleadoConvertidor {
         EmpleadoDTO empleadoDTO = new EmpleadoDTO();
         empleadoDTO.setId(empleado.getIdAsString());  // Convertimos ObjectId a String
         empleadoDTO.setNombre(empleado.getNombre());
-        empleadoDTO.setCargo(empleado.getCargo());
+        empleadoDTO.setPuesto(empleado.getPuesto());
         empleadoDTO.setSalario(empleado.getSalario());
 
         return empleadoDTO;
@@ -25,7 +25,7 @@ public class EmpleadoConvertidor {
         Empleado empleado = new Empleado();
         empleado.setIdFromString(empleadoDTO.getId());  // Convertimos String a ObjectId
         empleado.setNombre(empleadoDTO.getNombre());
-        empleado.setCargo(empleadoDTO.getCargo());
+        empleado.setPuesto(empleadoDTO.getPuesto());
         empleado.setSalario(empleadoDTO.getSalario());
 
         return empleado;
