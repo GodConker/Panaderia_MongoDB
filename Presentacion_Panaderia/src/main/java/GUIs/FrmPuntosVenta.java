@@ -4,11 +4,27 @@
  */
 package GUIs;
 
+import control.Control;
+import dtos.TiendaDTO;
+import java.awt.Desktop;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Dell
  */
 public class FrmPuntosVenta extends javax.swing.JFrame {
+
+    private final Control control;
+
+    private Map<String, String> tiendasMap;
 
     /**
      * Creates new form FmrPuntoVenta
@@ -16,6 +32,39 @@ public class FrmPuntosVenta extends javax.swing.JFrame {
     public FrmPuntosVenta() {
         initComponents();
         setLocationRelativeTo(null);
+        control = new Control();
+        cargarTiendas();
+    }
+    
+    private void cargarTiendas() {
+        try {
+            cbTiendas.removeAllItems();
+
+            // Llamada a la capa de negocio (Control) para obtener los DTOs
+            List<TiendaDTO> tiendas = control.obtenerTiendas();
+
+            // Crear un modelo de datos para el JComboBox
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+
+            // Usar un mapa para almacenar el ID de cada tienda por su nombre
+            this.tiendasMap = new HashMap<>();
+
+            // Agregar los nombres de las tiendas al ComboBox y guardar el ID en el mapa
+            for (TiendaDTO tienda : tiendas) {
+                String nombreTienda = tienda.getNombre();
+                String idTienda = tienda.getId();
+                model.addElement(nombreTienda);
+                tiendasMap.put(nombreTienda, idTienda); // Guardar la relación nombre -> ID
+            }
+
+            // Asignar el modelo al ComboBox
+            cbTiendas.setModel(model);
+
+            // Guardar el mapa de tiendas como un atributo de la clase
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar las tiendas: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -29,19 +78,11 @@ public class FrmPuntosVenta extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        BtnBuscarProducto = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         BtnRegresar = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        TablaPuntosVentaTienda = new javax.swing.JTable();
         BtnMapaPuntosVenta = new javax.swing.JButton();
-        BtnBuscarTienda = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        DPFecha = new com.github.lgooddatepicker.components.DatePicker();
-        TxtfTienda = new javax.swing.JTextField();
-        TxtfProducto = new javax.swing.JTextField();
+        cbTiendas = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -50,17 +91,6 @@ public class FrmPuntosVenta extends javax.swing.JFrame {
         jLabel1.setText("Puntos de Venta:");
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 0));
-
-        jLabel2.setText("Producto:");
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 0));
-
-        BtnBuscarProducto.setText("Buscar");
-        BtnBuscarProducto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BtnBuscarProductoActionPerformed(evt);
-            }
-        });
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/image11.png"))); // NOI18N
 
@@ -71,18 +101,6 @@ public class FrmPuntosVenta extends javax.swing.JFrame {
             }
         });
 
-        TablaPuntosVentaTienda.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"", "", "", "", null},
-                {"", "", "", "", null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Tienda", "Productos", "Cantidad Paquetes Surtidos", "Fecha Surtido", "Entregado Por"
-            }
-        ));
-        jScrollPane2.setViewportView(TablaPuntosVentaTienda);
-
         BtnMapaPuntosVenta.setText("Ver Puntos en Mapa");
         BtnMapaPuntosVenta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -90,76 +108,33 @@ public class FrmPuntosVenta extends javax.swing.JFrame {
             }
         });
 
-        BtnBuscarTienda.setText("Buscar");
-        BtnBuscarTienda.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BtnBuscarTiendaActionPerformed(evt);
-            }
-        });
-
         jLabel4.setText("Tienda:");
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 0));
-
-        jLabel5.setText("Fecha:");
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 0));
-
-        TxtfTienda.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TxtfTiendaActionPerformed(evt);
-            }
-        });
-
-        TxtfProducto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TxtfProductoActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2)
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(127, 127, 127)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addContainerGap(254, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(45, 45, 45)))
+                .addGap(235, 235, 235))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(152, 152, 152)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(BtnRegresar)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(TxtfTienda, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(3, 3, 3)
-                        .addComponent(TxtfProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(DPFecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(cbTiendas, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(BtnMapaPuntosVenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(BtnBuscarProducto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(BtnBuscarTienda, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(133, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(BtnRegresar)
-                        .addGap(260, 260, 260))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(45, 45, 45)))
-                        .addGap(235, 235, 235))))
+                .addComponent(BtnMapaPuntosVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -168,26 +143,15 @@ public class FrmPuntosVenta extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
-                .addGap(13, 13, 13)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(BtnBuscarTienda)
-                    .addComponent(TxtfTienda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(BtnBuscarProducto)
-                    .addComponent(TxtfProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(DPFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(BtnMapaPuntosVenta))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cbTiendas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(BtnMapaPuntosVenta)))
+                .addGap(50, 50, 50)
                 .addComponent(BtnRegresar)
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addGap(124, 124, 124))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -206,10 +170,6 @@ public class FrmPuntosVenta extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void BtnBuscarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBuscarProductoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_BtnBuscarProductoActionPerformed
-
     private void BtnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRegresarActionPerformed
  // Crear una nueva instancia de FrmMenu
         FrmMenu menu = new FrmMenu();
@@ -219,21 +179,44 @@ public class FrmPuntosVenta extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_BtnRegresarActionPerformed
 
-    private void BtnBuscarTiendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBuscarTiendaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_BtnBuscarTiendaActionPerformed
-
     private void BtnMapaPuntosVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnMapaPuntosVentaActionPerformed
         // TODO add your handling code here:
+        // TODO add your handling code here:
+
+        // Obtener el nombre de la tienda seleccionada del ComboBox
+        String tiendaSeleccionada = (String) cbTiendas.getSelectedItem();
+
+        // Obtener el ID de la tienda seleccionada desde el mapa
+        String idTienda = tiendasMap.get(tiendaSeleccionada);
+
+        // Verificar que se haya encontrado un ID válido
+        if (idTienda != null) {
+            // Obtener las coordenadas de la tienda utilizando el ID
+            String ubicacion = control.obtenerCoordenadasDeTienda(idTienda);  // Método que obtienes de tu DAO o Control
+
+            if (ubicacion != null) {
+                try {
+                    // Codificar la ubicación para Google Maps
+                    String encodedUbicacion = URLEncoder.encode(ubicacion, StandardCharsets.UTF_8.toString());
+                    String url = "https://www.google.com/maps?q=" + encodedUbicacion;
+
+                    // Abrir el navegador con la URL de Google Maps
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (Exception e) {
+                    e.printStackTrace();  // Manejo de excepciones
+                }
+            } else {
+                // Si no se encuentra la ubicación, mostrar un mensaje
+                JOptionPane.showMessageDialog(this, "La tienda seleccionada no tiene coordenadas.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            // Si no se encontró el ID de la tienda en el mapa, manejar el error
+            JOptionPane.showMessageDialog(this, "No se pudo encontrar la tienda seleccionada.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
     }//GEN-LAST:event_BtnMapaPuntosVentaActionPerformed
-
-    private void TxtfTiendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TxtfTiendaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TxtfTiendaActionPerformed
-
-    private void TxtfProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TxtfProductoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TxtfProductoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -272,20 +255,12 @@ public class FrmPuntosVenta extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BtnBuscarProducto;
-    private javax.swing.JButton BtnBuscarTienda;
     private javax.swing.JButton BtnMapaPuntosVenta;
     private javax.swing.JButton BtnRegresar;
-    private com.github.lgooddatepicker.components.DatePicker DPFecha;
-    private javax.swing.JTable TablaPuntosVentaTienda;
-    private javax.swing.JTextField TxtfProducto;
-    private javax.swing.JTextField TxtfTienda;
+    private javax.swing.JComboBox<String> cbTiendas;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
 }

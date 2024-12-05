@@ -473,4 +473,22 @@ public class Control {
         
         inventarioBO.actualizarInventario(inventario);
     }
+    
+    public String obtenerCoordenadasDeTienda(String idTienda) {
+    try {
+        // Obtener la tienda usando TiendaBO, asumiendo que existe un método que devuelve Tienda por su ID
+        Tienda tienda = tiendaBO.obtenerTiendaPorID(idTienda);
+        
+        // Verificar si la tienda existe
+        if (tienda != null) {
+            // Obtener las coordenadas de la tienda y retornarlas
+            return tienda.getUbicacionCoordenadas(); // Asumimos que este es el campo de coordenadas
+        } else {
+            throw new RuntimeException("No se encontró la tienda con ID: " + idTienda);
+        }
+    } catch (Exception e) {
+        // Manejar excepciones si ocurre un error
+        throw new RuntimeException("Error al obtener las coordenadas de la tienda: " + e.getMessage(), e);
+    }
+}
 }
