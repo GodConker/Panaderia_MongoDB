@@ -14,6 +14,7 @@ import interfaces.IProductoDAO;
 import java.util.ArrayList;
 import java.util.List;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -37,7 +38,7 @@ public class ProductoDAO implements IProductoDAO {
     // Método auxiliar para convertir un Document a Producto
     private Producto convertirADocumentoAProducto(Document doc) {
         return new Producto(
-            doc.getObjectId("idProducto"),  // Usamos getInteger en lugar de getLong
+            doc.getObjectId("_id"),  // Usamos getInteger en lugar de getLong
             doc.getString("nombre"),
             doc.getString("marca"),
             doc.getDouble("precio"),
@@ -47,7 +48,7 @@ public class ProductoDAO implements IProductoDAO {
 
     // Método auxiliar para convertir Producto a Document
     private Document convertirAProductoADocumento(Producto producto) {
-        return new Document("idProducto", producto.getId())
+        return new Document("_id", producto.getId())
             .append("nombre", producto.getNombre())
             .append("marca", producto.getMarca())
             .append("precio", producto.getPrecio())
@@ -67,8 +68,8 @@ public class ProductoDAO implements IProductoDAO {
     }
 
     @Override
-    public Producto obtenerProductoPorID(int id) {
-        Document doc = coleccion.find(Filters.eq("idProducto", id)).first();
+    public Producto obtenerProductoPorID(ObjectId id) {
+        Document doc = coleccion.find(Filters.eq("_id", id)).first();
         return (doc != null) ? convertirADocumentoAProducto(doc) : null;
     }
 
@@ -87,7 +88,7 @@ public class ProductoDAO implements IProductoDAO {
     @Override
     public boolean actualizarProducto(Producto producto) {
         try {
-            Document filtro = new Document("idProducto", producto.getId());
+            Document filtro = new Document("_id", producto.getId());
             Document actualizacion = new Document("$set", convertirAProductoADocumento(producto));
             coleccion.updateOne(filtro, actualizacion);
             return true;

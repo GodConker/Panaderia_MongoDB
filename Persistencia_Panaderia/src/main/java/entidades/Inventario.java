@@ -3,7 +3,6 @@
  */
 package entidades;
 
-import org.bson.types.ObjectId;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -19,7 +18,7 @@ public class Inventario implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    private ObjectId id;
+    private String id;
 
     private int cantidadDisponible;
     private Date fechaActualizacion;
@@ -30,7 +29,7 @@ public class Inventario implements Serializable {
     public Inventario() {
     }
 
-    public Inventario(ObjectId id, int cantidadDisponible, Date fechaActualizacion, Producto producto) {
+    public Inventario(String id, int cantidadDisponible, Date fechaActualizacion, Producto producto) {
         this.id = id;
         this.cantidadDisponible = cantidadDisponible;
         this.fechaActualizacion = fechaActualizacion;
@@ -44,18 +43,18 @@ public class Inventario implements Serializable {
     }
     
     // Constructor para crear un objeto Inventario usando los parámetros de doc
-    public Inventario(ObjectId id, Producto producto, int cantidadDisponible) {
+    public Inventario(String id, Producto producto, int cantidadDisponible) {
         this.id = id;
         this.producto = producto;
         this.cantidadDisponible = cantidadDisponible;
     }
 
     // Getters y Setters
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 

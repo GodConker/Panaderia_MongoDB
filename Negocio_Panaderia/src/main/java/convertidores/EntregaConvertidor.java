@@ -44,7 +44,7 @@ public class EntregaConvertidor {
             List<ProductoDTO> productosDTO = new ArrayList<>();
             for (int i = 0; i < entrega.getProductos().size(); i++) {
                 Producto producto = entrega.getProductos().get(i);
-                ProductoDTO productoDTO = new ProductoDTO(producto.getNombre(), entrega.getCantidades().get(i), producto.getPrecio());
+                ProductoDTO productoDTO = new ProductoDTO(producto.getNombre(), entrega.getCantidades().get(i), producto.getPrecio(), producto.getDescripcion());
                 productosDTO.add(productoDTO);
             }
             entregaDTO.setProductos(productosDTO);

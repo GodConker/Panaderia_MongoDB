@@ -550,13 +550,16 @@ public class FrmEntregas extends javax.swing.JFrame {
 
                 // Asignar productos seleccionados al DTO
                 if (!donasSeleccionadas.equals("Ninguno")) {
-                    entregaDTO.getProductos().add(new ProductoDTO("Donas", Integer.parseInt(donasSeleccionadas), precioDonas));
+                    entregaDTO.getProductos().add(new ProductoDTO("Donas", Integer.parseInt(donasSeleccionadas), precioDonas, "Donas de 1 sabor de cubierta, sencillas"));
+                    control.desinventariar("1", Integer.parseInt(donasSeleccionadas));
                 }
                 if (!empanadasSeleccionadas.equals("Ninguno")) {
-                    entregaDTO.getProductos().add(new ProductoDTO("Empanadas", Integer.parseInt(empanadasSeleccionadas), precioEmpanadas));
+                    entregaDTO.getProductos().add(new ProductoDTO("Empanadas", Integer.parseInt(empanadasSeleccionadas), precioEmpanadas, "Empanadas rellenas de diferentes sabores"));
+                    control.desinventariar("2", Integer.parseInt(donasSeleccionadas));
                 }
                 if (!coricosSeleccionados.equals("Ninguno")) {
-                    entregaDTO.getProductos().add(new ProductoDTO("Coricos", Integer.parseInt(coricosSeleccionados), precioCoricos));
+                    entregaDTO.getProductos().add(new ProductoDTO("Coricos", Integer.parseInt(coricosSeleccionados), precioCoricos, "Coricos tradicionales de maíz con toque de sal"));
+                    control.desinventariar("3", Integer.parseInt(donasSeleccionadas));
                 }
 
                 // Registrar la entrega usando el controlador

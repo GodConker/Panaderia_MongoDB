@@ -15,7 +15,7 @@ public interface IInventarioDAO {
 
     List<Inventario> obtenerInventarioCompleto();
 
-    Inventario obtenerInventarioPorID(int id);
+    Inventario obtenerInventarioPorID(String id);
 
     boolean actualizarInventario(Inventario inventario);
 

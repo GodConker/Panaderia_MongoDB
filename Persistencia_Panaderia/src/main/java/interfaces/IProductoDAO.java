@@ -6,6 +6,7 @@ package interfaces;
 
 import entidades.Producto;
 import java.util.List;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -15,7 +16,7 @@ public interface IProductoDAO {
 
     List<Producto> obtenerTodosProductos();
 
-    Producto obtenerProductoPorID(int id);
+    Producto obtenerProductoPorID(ObjectId id);
 
     boolean agregarProducto(Producto producto);
 

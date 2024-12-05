@@ -4,6 +4,7 @@
  */
 package business.objects;
 
+import entidades.Inventario;
 import interfaces.IInventarioBO;
 import interfaces.IInventarioDAO;
 
@@ -22,6 +23,18 @@ public class InventarioBO implements IInventarioBO {
     @Override
     public int obtenerCantidadDisponible(String idProducto) {
         return inventarioDAO.obtenerCantidadDisponiblePorProducto(idProducto);
+    }
+    
+    public Inventario obtenerInventarioPorId(String id) {
+        return inventarioDAO.obtenerInventarioPorID(id);
+    }
+    
+    public boolean actualizarInventario(Inventario inventario) {
+        try {
+            return inventarioDAO.actualizarInventario(inventario);
+        }catch(Exception e) {
+            throw new RuntimeException("Error al actualizar el inventario: " + e.getMessage(), e);
+        }
     }
 }
 

@@ -7,6 +7,7 @@ package business.objects;
 import daos.ProductoDAO;
 import entidades.Producto;
 import java.util.List;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -25,7 +26,11 @@ public class ProductoBO {
     }
 
     // Método para obtener un producto por ID
-    public Producto obtenerProductoPorID(int id) {
+    public Producto obtenerProductoPorID(ObjectId id) {
         return productoDAO.obtenerProductoPorID(id); // Llama al DAO para obtener producto por ID
+    }
+    
+    public boolean actualizarProducto(Producto producto) {
+        return productoDAO.actualizarProducto(producto);
     }
 }

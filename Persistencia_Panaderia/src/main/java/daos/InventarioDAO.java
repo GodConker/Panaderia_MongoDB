@@ -15,6 +15,7 @@ import interfaces.IInventarioDAO;
 import java.util.ArrayList;
 import java.util.List;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -33,20 +34,20 @@ public class InventarioDAO implements IInventarioDAO {
     // Método auxiliar para convertir un Document a Inventario
     private Inventario convertirADocumentoAInventario(Document doc) {
         Producto producto = new Producto();
-        producto.setId(doc.getObjectId("idProducto")); // Suponiendo que "idProducto" es un campo en MongoDB
+        //producto.setId(doc.getObjectId("_id")); // Suponiendo que "idProducto" es un campo en MongoDB
 
         return new Inventario(
-                doc.getObjectId("idInventario"),
+                doc.getString("_id"),
                 producto, // Asumimos que Producto se maneja por su ID en el Inventario
-                doc.getInteger("cantidad")
+                doc.getInteger("cantidadDisponible")
         );
     }
 
     // Método auxiliar para convertir Inventario a Document
     private Document convertirAInventarioADocumento(Inventario inventario) {
-        return new Document("idInventario", inventario.getId())
+        return new Document("_id", inventario.getId())
                 .append("idProducto", inventario.getProducto().getId()) // Se usa el ID del producto
-                .append("cantidad", inventario.getCantidadDisponible());
+                .append("cantidadDisponible", inventario.getCantidadDisponible());
     }
 
     @Override
@@ -62,16 +63,16 @@ public class InventarioDAO implements IInventarioDAO {
     }
 
     @Override
-    public Inventario obtenerInventarioPorID(int id) {
-        Document doc = coleccion.find(Filters.eq("idInventario", id)).first();
+    public Inventario obtenerInventarioPorID(String id) {
+        Document doc = coleccion.find(Filters.eq("_id", id)).first();
         return (doc != null) ? convertirADocumentoAInventario(doc) : null;
     }
 
     @Override
     public boolean actualizarInventario(Inventario inventario) {
         try {
-            Document filtro = new Document("idInventario", inventario.getId());
-            Document actualizacion = new Document("$set", new Document("cantidad", inventario.getCantidadDisponible()));
+            Document filtro = new Document("_id", inventario.getId());
+            Document actualizacion = new Document("$set", new Document("cantidadDisponible", inventario.getCantidadDisponible()));
             coleccion.updateOne(filtro, actualizacion);
             return true;
         } catch (Exception e) {

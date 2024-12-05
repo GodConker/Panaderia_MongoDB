@@ -1,21 +1,89 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUIs;
 
-/**
- *
- * @author Dell
- */
+import control.Control;
+import dtos.InventarioDTO;
+import dtos.ProductoDTO;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 public class FrmInventario extends javax.swing.JFrame {
 
+    private Control control;
+
     /**
-     * Creates new form NewJFrame
+     * Creates new form FrmInventario
      */
     public FrmInventario() {
         initComponents();
         setLocationRelativeTo(null);
+        control = new Control(); // Inicializamos el control
+        llenarTablaInventario(); // Llamamos al método para llenar la tabla
+        agregarListenerSeleccionFila();
+    }
+
+    // Método para llenar la tabla con los productos
+    private void llenarTablaInventario() {
+        // Obtener la lista de productos de la base de datos
+        List<ProductoDTO> listaProductos = control.obtenerProductos();
+
+        // Obtener el modelo de la tabla
+        DefaultTableModel model = (DefaultTableModel) TableProductos.getModel(); // Usamos TableProductos
+
+        // Limpiar la tabla antes de llenarla
+        model.setRowCount(0);
+
+        // Llenar la tabla con los datos de los productos
+        for (ProductoDTO producto : listaProductos) {
+            Object[] fila = new Object[4]; // 4 columnas: Nombre, Precio, Descripción, Cantidad
+            fila[0] = producto.getNombre(); // Nombre del producto
+            fila[1] = producto.getPrecio(); // Precio del producto
+            fila[2] = control.obtenerCantidadDisponible(producto.getId());
+            fila[3] = producto.getDescripcion();
+
+            // Añadir la fila al modelo
+            model.addRow(fila);
+        }
+
+        // Configurar la tabla para que no sea editable
+        TableProductos.setDefaultEditor(Object.class, null); // Deshabilitar edición
+        TableProductos.clearSelection(); // Limpiar la selección
+    }
+
+    private void limpiarCampos() {
+        TxtfCantidad.setText("");
+        TxtfPrecio.setText("");
+        TxtfDescripcion.setText("");
+    }
+    
+    private String idInventario;
+    private String idProducto;
+    
+    private void agregarListenerSeleccionFila() {
+        TableProductos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int row = TableProductos.getSelectedRow();
+
+                    if (row >= 0) {
+                        DefaultTableModel model = (DefaultTableModel) TableProductos.getModel();
+                        String cantidad = model.getValueAt(row, 2).toString();
+                        String precio = model.getValueAt(row, 1).toString();
+                        String descripcion = model.getValueAt(row, 3).toString();
+
+                        idInventario = String.valueOf(row + 1);
+                        idProducto = control.obtenerProductos().get(row).getId();
+                        
+                        // Establecer los valores en los campos
+                        TxtfCantidad.setText(cantidad);
+                        TxtfPrecio.setText(precio);
+                        TxtfDescripcion.setText(descripcion);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -59,7 +127,7 @@ public class FrmInventario extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Producto", "Cantidad", "Precio", "Descripción"
+                "Producto", "Precio", "Cantidad", "Descripción"
             }
         ));
         jScrollPane1.setViewportView(TableProductos);
@@ -215,11 +283,62 @@ public class FrmInventario extends javax.swing.JFrame {
     }//GEN-LAST:event_TxtfDescripcionActionPerformed
 
     private void BtnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnCancelarActionPerformed
-
+        limpiarCampos();
     }//GEN-LAST:event_BtnCancelarActionPerformed
 
     private void BtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnActualizarActionPerformed
+        String cantidad = TxtfCantidad.getText().trim();
+        String precio = TxtfPrecio.getText().trim();
+        String descripcion = TxtfDescripcion.getText().trim();
+        
+        if (idProducto == null || idProducto.trim().isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "No se ha seleccionado un producto válido para actualizar.",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
 
+        // Crear el DTO del empleado con los datos nuevos
+        ProductoDTO productoDTO = new ProductoDTO();
+        productoDTO.setId(idProducto);
+        productoDTO.setPrecio(Double.parseDouble(precio));
+        productoDTO.setDescripcion(descripcion);
+        
+        InventarioDTO inventarioDTO = new InventarioDTO();
+        inventarioDTO.setId(idInventario);
+        inventarioDTO.setCantidadDisponible(Integer.parseInt(cantidad));
+
+        int confirmacion = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                "¿Está seguro de que desea actualizar el inventario?",
+                "Confirmación",
+                javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
+            boolean exito = control.actualizarProducto(productoDTO);
+            boolean exito2 = control.actualizarInventario(inventarioDTO);
+            if (exito && exito2) {
+                javax.swing.JOptionPane.showMessageDialog(
+                        this,
+                        "Inventario actualizado correctamente.",
+                        "Éxito",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE
+                );
+                llenarTablaInventario(); // Actualizar la tabla después de actualizar
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(
+                        this,
+                        "Ocurrió un error al actualizar el inventario. Intente nuevamente.",
+                        "Error",
+                        javax.swing.JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
     }//GEN-LAST:event_BtnActualizarActionPerformed
 
     private void BtnRegresarMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRegresarMenu1ActionPerformed

@@ -41,7 +41,13 @@ public class EntregaDAO implements IEntregaDAO {
         // Conectamos a la colección "entregas" de la base de datos
         this.coleccion = baseDatos.getCollection("entrega");
     }
-
+    /* Aquí es donde causa el error al buscar las entregas en reporte Ventas
+        catch (Exception e) {
+            System.err.println("Error al convertir el documento a Entrega: " + e.getMessage());
+        }
+        No sé si sea un error o algo que falte en la base de datos, pero en mi compu
+        sí jala xD. 
+    */
     // Método auxiliar para convertir un Document a Entrega
     private Entrega convertirADocumentoAEntrega(Document doc) {
         Entrega entrega = new Entrega();

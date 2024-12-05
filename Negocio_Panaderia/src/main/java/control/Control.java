@@ -18,10 +18,12 @@ import daos.ProductoDAO;
 import daos.TiendaDAO;
 import dtos.EmpleadoDTO;
 import dtos.EntregaDTO;
+import dtos.InventarioDTO;
 import dtos.ProductoDTO;
 import dtos.TiendaDTO;
 import entidades.Empleado;
 import entidades.Entrega;
+import entidades.Inventario;
 import entidades.Producto;
 import entidades.Tienda;
 import interfaces.IEmpleadoDAO;
@@ -70,20 +72,34 @@ public class Control {
     }
 
     public List<ProductoDTO> obtenerProductos() {
-        List<Producto> productos = productoBO.obtenerTodosProductos(); // Obtienes los productos
+        // Obtener la lista de productos desde ProductoBO
+        List<Producto> productos = productoBO.obtenerTodosProductos(); // Obtiene los productos
         List<ProductoDTO> productosDTO = new ArrayList<>();
 
-        // Convierte los productos a ProductoDTO
+        // Recorrer cada producto y convertirlo a ProductoDTO
         for (Producto producto : productos) {
             ProductoDTO dto = new ProductoDTO();
+
+            // Establecer el nombre y el precio del producto
+            dto.setId(producto.getIdAsString());
             dto.setNombre(producto.getNombre());
             dto.setPrecio(producto.getPrecio());
-            // Obtén la cantidad desde InventarioBO (usando el método correcto)
-            dto.setCantidad(inventarioBO.obtenerCantidadDisponible(producto.getIdAsString())); // Cambiar el método aquí
+            dto.setDescripcion(producto.getDescripcion());
+
+            // Obtener la cantidad disponible desde InventarioBO usando el ID del producto
+            int cantidadDisponible = inventarioBO.obtenerCantidadDisponible(producto.getIdAsString());
+            dto.setCantidad(cantidadDisponible); // Establecer la cantidad disponible
+
+            // Agregar el ProductoDTO a la lista
             productosDTO.add(dto);
         }
 
+        // Devolver la lista de ProductoDTO
         return productosDTO;
+    }
+    
+    public int obtenerCantidadDisponible(String id) {
+        return inventarioBO.obtenerCantidadDisponible(id);
     }
 
     public List<EmpleadoDTO> obtenerRepartidores() {
@@ -388,5 +404,73 @@ public class Control {
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener los empleados: " + e.getMessage(), e);
         }
+    }
+    
+    public boolean actualizarProducto(ProductoDTO productoDTO) {
+        try {
+            // Verificar si el ID del producto está presente y no es vacío
+            String idProducto = productoDTO.getId();
+            if (idProducto == null || idProducto.trim().isEmpty()) {
+                throw new IllegalArgumentException("El ID del empleado no puede ser null o vacío.");
+            }
+
+            // Crear ObjectId a partir del ID
+            ObjectId objectId = new ObjectId(idProducto);
+
+            // Obtener el producto desde la base de datos usando el ID
+            Producto producto = productoBO.obtenerProductoPorID(objectId);
+
+            if (producto == null) {
+                throw new RuntimeException("No se encontró un empleado con el ID: " + idProducto);
+            }
+
+            // Conservar el ID del producto y solo actualizar los campos permitidos
+            producto.setDescripcion(productoDTO.getDescripcion());    // Actualizar descripcion
+            producto.setPrecio(productoDTO.getPrecio()); // Actualizar precio
+
+            // Llamar a la lógica del BO para actualizar el producto
+            boolean resultado = productoBO.actualizarProducto(producto);
+
+            return resultado;
+        } catch (Exception e) {
+            // Capturar cualquier error y lanzarlo como RuntimeException
+            throw new RuntimeException("Error al actualizar el empleado: " + e.getMessage(), e);
+        }
+    }
+    
+    public boolean actualizarInventario(InventarioDTO inventarioDTO) {
+        try {
+            // Verificar si el ID del empleado está presente y no es vacío
+            String idInventario = inventarioDTO.getId();
+            if (idInventario == null || idInventario.trim().isEmpty()) {
+                throw new IllegalArgumentException("El ID del empleado no puede ser null o vacío.");
+            }
+
+            // Obtener el empleado desde la base de datos usando el ID
+            Inventario inventario = inventarioBO.obtenerInventarioPorId(idInventario);
+
+            if (inventario == null) {
+                throw new RuntimeException("No se encontró un empleado con el ID: " + idInventario);
+            }
+
+            // Conservar el ID del empleado y solo actualizar los campos permitidos
+            inventario.setCantidadDisponible(inventarioDTO.getCantidadDisponible());  // Actualizar cantidad disponible
+
+            // Llamar a la lógica del BO para actualizar el empleado
+            boolean resultado = inventarioBO.actualizarInventario(inventario);
+
+            return resultado;
+        } catch (Exception e) {
+            // Capturar cualquier error y lanzarlo como RuntimeException
+            throw new RuntimeException("Error al actualizar el empleado: " + e.getMessage(), e);
+        }
+    }
+    
+    public void desinventariar(String id, int cantidad) {
+        Inventario inventario = inventarioBO.obtenerInventarioPorId(id);
+        
+        inventario.setCantidadDisponible(inventario.getCantidadDisponible() - cantidad);
+        
+        inventarioBO.actualizarInventario(inventario);
     }
 }
