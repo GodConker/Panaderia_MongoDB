@@ -1,0 +1,42 @@
+[{
+  "_id": "6744ffb289a0633b2194eb6c",
+  "nombre": "Abarrotes Lety",
+  "ubicacionCoordenadas": "27.50227624706672, -109.9633732435026",
+  "telefono": null,
+  "direccion": "Morelos, C. Divisaderos, 85110 Ciudad Obregón, Sonora."
+},
+{
+  "_id": "6744ffb289a0633b2194eb6d",
+  "nombre": "Tiendita Las Haciendas",
+  "ubicacionCoordenadas": "27.487826, -109.978253",
+  "telefono": null,
+  "direccion": "Calle Haciendas del Sol, 85200 Ciudad Obregón, Sonora."
+},
+{
+  "_id": "6744ffb289a0633b2194eb6e",
+  "nombre": "Miscelanea Del Pueblo",
+  "ubicacionCoordenadas": "27.511441, -109.953594",
+  "telefono": null,
+  "direccion": "Pueblo de los Álamos, 85130 Ciudad Obregón, Sonora."
+},
+{
+  "_id": "6744ffb289a0633b2194eb6f",
+  "nombre": "Tiendita Seguro Social",
+  "ubicacionCoordenadas": "27.507315, -109.960780",
+  "telefono": null,
+  "direccion": "Calle 200, 85100 Ciudad Obregón, Sonora."
+},
+{
+  "_id": "6744ffb289a0633b2194eb70",
+  "nombre": "Abarrotes Surtido Rico",
+  "ubicacionCoordenadas": "27.500839, -109.966437",
+  "telefono": null,
+  "direccion": "Avenida Los Yaquis, 85250 Ciudad Obregón, Sonora."
+},
+{
+  "_id": "6744ffb289a0633b2194eb6g",
+  "nombre": "Abarrotes Nadia",
+  "ubicacionCoordenadas": "27.50227624706672, -109.9633732435026",
+  "telefono": "null",
+  "direccion": "Morelos, C. Divisaderos, 85110 Ciudad Obregón, Sonora."
+}]

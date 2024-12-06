@@ -1,0 +1,27 @@
+[{
+  "_id": {
+    "$oid": "6744fdd889a0633b2194eb6a"
+  },
+  "nombre": "Donas",
+  "marca": "Empanaditas Gela",
+  "precio": 70,
+  "descripcion": "Dona de 1 sabor de cubierta, sencillas"
+},
+{
+  "_id": {
+    "$oid": "6744fdd889a0633b2194eb6b"
+  },
+  "nombre": "Empanadas",
+  "marca": "Empanaditas Gela",
+  "precio": 50,
+  "descripcion": "Empanadas rellenas de diferentes sabores"
+},
+{
+  "_id": {
+    "$oid": "6744fdd889a0633b2194eb6c"
+  },
+  "nombre": "Coricos",
+  "marca": "Coricos Gela",
+  "precio": 30,
+  "descripcion": "Coricos tradicionales de maíz con toque de sal"
+}]

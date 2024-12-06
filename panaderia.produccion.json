@@ -1,0 +1,8 @@
+[{
+  "_id": 1,
+  "fechaProduccion": "2024-10-25T18:00:00Z",
+  "empleado": {
+    "_id": 1,
+    "nombre": "Antonio Valle"
+  }
+}]

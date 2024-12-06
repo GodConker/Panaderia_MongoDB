@@ -1,0 +1,14 @@
+[{
+  "_id": 1,
+  "cantidadProducida": 50,
+  "fechaProduccion": "2024-10-25T18:00:00Z",
+  "fechaCaducidad": "2024-12-05T17:30:00Z",
+  "id_producto": {
+    "$oid": "6744fdd889a0633b2194eb6a"
+  },
+  "produccion": {
+    "_id": 1,
+    "fechaProduccion": "2024-10-25T18:00:00Z",
+    "id_empleado": 1
+  }
+}]

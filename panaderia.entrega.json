@@ -1,0 +1,381 @@
+[{
+  "_id": {
+    "$oid": "6750c5219d95544336390247"
+  },
+  "tienda": "6744ffb289a0633b2194eb6g",
+  "repartidor": "6742a35c89a0633b2194eb59",
+  "montoTotal": 640,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 3,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 5,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 7,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-04T23:09:53.733Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "6750c5b09d95544336390248"
+  },
+  "tienda": "6744ffb289a0633b2194eb6e",
+  "repartidor": "6742a35c89a0633b2194eb59",
+  "montoTotal": 350,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 5,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 1,
+      "precio": 50
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-04T23:12:16.964Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "6750c7dd0b88aa4da4163b3f"
+  },
+  "tienda": "6744ffb289a0633b2194eb6e",
+  "repartidor": "6742a35c89a0633b2194eb57",
+  "montoTotal": 450,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 4,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 3,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 2,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-04T23:21:33.575Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "6750c7e80b88aa4da4163b40"
+  },
+  "tienda": "6744ffb289a0633b2194eb6d",
+  "repartidor": "6742a35c89a0633b2194eb58",
+  "montoTotal": 470,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 5,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 1,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 4,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-04T23:21:44.875Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "6750f37506e32948da922a56"
+  },
+  "tienda": "6744ffb289a0633b2194eb6c",
+  "repartidor": "6742a35c89a0633b2194eb57",
+  "montoTotal": 310,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 2,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 2,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 3,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T02:27:33.869Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "6751002bb4c412322fe02f34"
+  },
+  "tienda": "6744ffb289a0633b2194eb6f",
+  "repartidor": "6742a35c89a0633b2194eb58",
+  "montoTotal": 310,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 2,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 2,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 3,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T03:21:47.813Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "675104ff90c78b677d8d59a3"
+  },
+  "tienda": "6744ffb289a0633b2194eb6f",
+  "repartidor": "6742a35c89a0633b2194eb58",
+  "montoTotal": 500,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 4,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 4,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 2,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T03:42:23.413Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "675118c8b7eda01448179962"
+  },
+  "tienda": "6744ffb289a0633b2194eb6c",
+  "repartidor": "6742a35c89a0633b2194eb57",
+  "montoTotal": 280,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 2,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 2,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 2,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T05:06:48.537Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "6751195076717a2fa9d43533"
+  },
+  "tienda": "6744ffb289a0633b2194eb6c",
+  "repartidor": "6742a35c89a0633b2194eb57",
+  "montoTotal": 120,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 2,
+      "precio": 60
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T05:09:04.010Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "675122816cafc3732a12f18d"
+  },
+  "tienda": "6744ffb289a0633b2194eb6c",
+  "repartidor": "6742a35c89a0633b2194eb57",
+  "montoTotal": 120,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 2,
+      "precio": 60
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T05:48:17.109Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "675122bf6cafc3732a12f18e"
+  },
+  "tienda": "6744ffb289a0633b2194eb70",
+  "repartidor": "6742a35c89a0633b2194eb58",
+  "montoTotal": 450,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 4,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 3,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 2,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T05:49:19.839Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "67514a81feddb234dc70534b"
+  },
+  "tienda": "6744ffb289a0633b2194eb6c",
+  "repartidor": "6742a35c89a0633b2194eb57",
+  "montoTotal": 310,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 2,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 2,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 3,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T08:38:57.151Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "67514ab7feddb234dc70534c"
+  },
+  "tienda": "6744ffb289a0633b2194eb6e",
+  "repartidor": "6742a35c89a0633b2194eb59",
+  "montoTotal": 590,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 5,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 4,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 3,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T08:39:51.210Z"
+  },
+  "estado": "En proceso de entrega"
+},
+{
+  "_id": {
+    "$oid": "67514aecfeddb234dc70534d"
+  },
+  "tienda": "6744ffb289a0633b2194eb6d",
+  "repartidor": "6742a35c89a0633b2194eb57",
+  "montoTotal": 470,
+  "productos": [
+    {
+      "nombre": "Donas",
+      "cantidad": 4,
+      "precio": 60
+    },
+    {
+      "nombre": "Empanadas",
+      "cantidad": 4,
+      "precio": 50
+    },
+    {
+      "nombre": "Coricos",
+      "cantidad": 1,
+      "precio": 30
+    }
+  ],
+  "fechaEntrega": {
+    "$date": "2024-12-05T08:40:44.178Z"
+  },
+  "estado": "En proceso de entrega"
+}]

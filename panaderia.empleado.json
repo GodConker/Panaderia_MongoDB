@@ -1,0 +1,68 @@
+[{
+  "_id": {
+    "$oid": "6742a35c89a0633b2194eb57"
+  },
+  "idEmpleado": 1,
+  "nombre": "Antonio Valle",
+  "salario": 4000,
+  "puesto": "Repartidor"
+},
+{
+  "_id": {
+    "$oid": "6742a35c89a0633b2194eb58"
+  },
+  "idEmpleado": 2,
+  "nombre": "Daniel Castro",
+  "salario": 4000,
+  "puesto": "Repartidor"
+},
+{
+  "_id": {
+    "$oid": "6742a35c89a0633b2194eb59"
+  },
+  "idEmpleado": 3,
+  "nombre": "Ramón Pérez",
+  "salario": 4000,
+  "puesto": "Repartidor"
+},
+{
+  "_id": {
+    "$oid": "6742a35c89a0633b2194eb5a"
+  },
+  "idEmpleado": 4,
+  "nombre": "Isaac Félix",
+  "salario": 4000,
+  "puesto": "Repartidor"
+},
+{
+  "_id": {
+    "$oid": "6750c5d09d95544336390249"
+  },
+  "nombre": "Luis Miguel",
+  "puesto": "Panadero",
+  "salario": 6000
+},
+{
+  "_id": {
+    "$oid": "6750c68f9d9554433639024c"
+  },
+  "nombre": "José José",
+  "puesto": "Cajero",
+  "salario": 2000
+},
+{
+  "_id": {
+    "$oid": "6750c6a09d9554433639024d"
+  },
+  "nombre": "Juan Gabriel",
+  "puesto": "Cajero",
+  "salario": 2000
+},
+{
+  "_id": {
+    "$oid": "6750c6ab9d9554433639024e"
+  },
+  "nombre": "Julio Iglesias",
+  "puesto": "Cajero",
+  "salario": 2000
+}]

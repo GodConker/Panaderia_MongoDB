@@ -1,0 +1,18 @@
+[{
+  "_id": "1",
+  "id_producto": "6744fdd889a0633b2194eb6a",
+  "cantidadDisponible": 50,
+  "fechaActualizacion": "2024-11-23T19:00:00Z"
+},
+{
+  "_id": "2",
+  "id_producto": "6744fdd889a0633b2194eb6b",
+  "cantidadDisponible": 36,
+  "fechaActualizacion": "2024-11-23T19:00:00Z"
+},
+{
+  "_id": "3",
+  "id_producto": "6744fdd889a0633b2194eb6c",
+  "cantidadDisponible": 35,
+  "fechaActualizacion": "2024-11-23T19:00:00Z"
+}]
